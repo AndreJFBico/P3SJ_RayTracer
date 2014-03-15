@@ -2,6 +2,8 @@
 
 #include "includes.h"
 #include "Camera.h"
+#include "Plane.h"
+#include "Sphere.h"
 
 class NFFLoader
 {
@@ -25,6 +27,8 @@ class NFFLoader
 	Hither: distance of the hither plane (if any) from the eye. Mostly
 	needed for hidden surface algorithms.	*/
 	Camera *_c;
+
+	std::vector<Geometry*> _geometry;
 
 	NFFLoader(){};
 	NFFLoader(NFFLoader const&);
