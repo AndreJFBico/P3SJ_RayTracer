@@ -40,6 +40,18 @@
     <Filter Include="Source Files\Geometry">
       <UniqueIdentifier>{d2842964-d5d4-4176-88d4-199fe58c6895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\NFFLoader">
+      <UniqueIdentifier>{7e7c447e-66fa-42ba-bdc9-794a8da5781c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NFFLoader">
+      <UniqueIdentifier>{2207336a-a256-4517-9df5-bc23d4436f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OutConverter">
+      <UniqueIdentifier>{3a1c1e82-820c-48cc-b900-74759046e042}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OutConverter">
+      <UniqueIdentifier>{4ad7112e-4afc-4a61-8961-18bd2e7df1a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -51,14 +63,20 @@
     <ClCompile Include="..\src\Scene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Geometry.cpp">
+    <ClCompile Include="..\src\Sphere.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Plane.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Sphere.cpp">
+    <ClCompile Include="..\src\Geometry.cpp">
       <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NFFLoader.cpp">
+      <Filter>Source Files\NFFLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OutConverter.cpp">
+      <Filter>Source Files\OutConverter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +164,12 @@
     </ClInclude>
     <ClInclude Include="..\src\Sphere.h">
       <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NFFLoader.h">
+      <Filter>Header Files\NFFLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\OutConverter.h">
+      <Filter>Header Files\OutConverter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
