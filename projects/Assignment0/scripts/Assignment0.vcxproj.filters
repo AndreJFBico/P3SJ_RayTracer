@@ -34,6 +34,18 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{832f8b75-da9d-4fe4-b412-1aa426918ab4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Loader">
+      <UniqueIdentifier>{af730b39-bcd4-4276-84f9-267af3f37c6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OutConverter">
+      <UniqueIdentifier>{f7b211f6-936e-434b-8de4-0e6f1ad2039f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Loader">
+      <UniqueIdentifier>{c6f6ceae-fafc-44d5-ad1c-4d577a41bdae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OutConverter">
+      <UniqueIdentifier>{4c7037ec-7d52-4cec-aad0-3118454ada79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -44,6 +56,12 @@
     </ClCompile>
     <ClCompile Include="..\src\Scene.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NFFLoader.cpp">
+      <Filter>Source Files\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\OutConverter.cpp">
+      <Filter>Source Files\OutConverter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="..\src\Scene.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\OutConverter.h">
+      <Filter>Header Files\OutConverter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\NFFLoader.h">
+      <Filter>Header Files\Loader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,8 @@
 
 #include "includes.h"
 #include "Camera.h"
+#include "NFFLoader.h"
+#include "OutConverter.h"
 
 class Scene
 {
