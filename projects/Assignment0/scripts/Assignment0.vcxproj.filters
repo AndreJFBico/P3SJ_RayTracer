@@ -22,13 +22,28 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{fb394e76-cd1a-4543-8ba1-0e17ee568f64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{fb564bbf-7dcd-4e49-8149-143fdb7e9255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{f329abf4-e2cf-4d15-b9fc-473326dc097f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene">
+      <UniqueIdentifier>{2429c139-84e3-414c-9a02-2c09f6afb3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene">
+      <UniqueIdentifier>{832f8b75-da9d-4fe4-b412-1aa426918ab4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Camera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\Scene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,8 +117,11 @@
     <ClInclude Include="..\src\Includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Camera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\Scene.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

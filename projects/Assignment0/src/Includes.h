@@ -10,6 +10,8 @@
 #include <map>
 #include <math.h>
 
+#include <glm/glm.hpp>
+
 #define CAPTION "P3SJ"
 
 struct pixel
@@ -17,4 +19,17 @@ struct pixel
 	double r;
 	double g;
 	double b;
+};
+
+struct light
+{
+	/*-----*/
+	double x;
+	double y;
+	double z;
+	/*-----*/
+	double r;
+	double g;
+	double b;
+	/*-----*/
 };

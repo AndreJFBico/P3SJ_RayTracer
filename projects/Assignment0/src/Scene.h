@@ -1,13 +1,16 @@
 #pragma once
 
 #include "includes.h"
-
-
+#include "Camera.h"
 
 class Scene
 {
 	int currentPixel;
 	int RES_X, RES_Y;
+
+	std::vector<light> lights;
+
+	Camera *c;
 
 public:
 	Scene();
