@@ -5,6 +5,45 @@ Scene::Scene()
 
 }
 
+void Scene::loadNFF(const char *filename)
+{
+
+}
+
+void Scene::drawScene()
+{
+	std::cout << "rendering ..." << std::endl;
+
+	int dpi = 72;
+	int width = 640;
+	int height = 480;
+	int n = width*height;
+	pixel *pixels = new pixel[n];
+
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			currentPixel = y*width + x;
+
+			if ((x > 200 && x < 440) && (y > 200 && y < 280))
+			{
+				pixels[currentPixel].r = 0.2;
+				pixels[currentPixel].g = 0.4;
+				pixels[currentPixel].b = 0.1;
+			}
+			else
+			{
+				pixels[currentPixel].r = 0;
+				pixels[currentPixel].g = 0;
+				pixels[currentPixel].b = 0;
+			}
+		}
+	}
+
+	savebmp("scene.bmp", width, height, dpi, pixels);
+}
+
 void Scene::savebmp(const char *filename, int w, int h, int dpi, pixel *data)
 {
 	FILE *f;
