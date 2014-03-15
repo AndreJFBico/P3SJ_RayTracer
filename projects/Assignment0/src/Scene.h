@@ -2,6 +2,9 @@
 
 #include "includes.h"
 #include "Camera.h"
+#include "Geometry.h"
+#include "Plane.h"
+#include "Sphere.h"
 
 class Scene
 {
@@ -27,6 +30,9 @@ class Scene
 		Hither: distance of the hither plane (if any) from the eye. Mostly
 		needed for hidden surface algorithms.	*/
 	Camera *_c;
+
+	//Geometry list.
+	std::vector<Geometry*> _geometry;
 
 public:
 	Scene();
