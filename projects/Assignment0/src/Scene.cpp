@@ -6,6 +6,7 @@ Scene::Scene()
 	_backgroundColor = glm::vec3(0.0);
 	_lights = *(new std::vector<light>());
 	_c = NULL;
+	_r = new Ray();
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -21,7 +22,7 @@ void Scene::loadNFF(std::string fpath)
 void Scene::drawScene()
 {
 	std::cout << "rendering ..." << std::endl;
-
+	
 	int dpi = 72;
 	int width = 640;
 	int height = 480;
@@ -34,6 +35,7 @@ void Scene::drawScene()
 		for (int x = 0; x < _RES.x; x++)
 		{
 			_currentPixel = y*width + x;
+			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up);
 
 			if ((x > 200 && x < 440) && (y > 200 && y < 280))
 			{

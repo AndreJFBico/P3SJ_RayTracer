@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "NFFLoader.h"
 #include "OutConverter.h"
+#include "Ray.h"
 
 class Scene
 {
@@ -29,6 +30,7 @@ class Scene
 		Hither: distance of the hither plane (if any) from the eye. Mostly
 		needed for hidden surface algorithms.	*/
 	Camera *_c;
+	Ray *_r;
 
 public:
 	Scene();
