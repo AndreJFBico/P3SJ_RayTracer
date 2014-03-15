@@ -11,3 +11,10 @@
 #include <math.h>
 
 #define CAPTION "P3SJ"
+
+struct pixel
+{
+	double r;
+	double g;
+	double b;
+};

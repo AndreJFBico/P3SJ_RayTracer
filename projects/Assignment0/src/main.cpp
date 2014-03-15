@@ -6,13 +6,6 @@
 #include "Includes.h"
 #include "Scene.h"
 
-struct pixel
-{
-	double r;
-	double g;
-	double b;
-};
-
 int thisone;
 
 int main(int argc, char* argv[])

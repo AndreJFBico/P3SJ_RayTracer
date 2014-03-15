@@ -1,11 +1,11 @@
 #include "Scene.h"
 
-Scene()
+Scene::Scene()
 {
 
 }
 
-void savebmp(const char *filename, int w, int h, int dpi, pixel *data)
+void Scene::savebmp(const char *filename, int w, int h, int dpi, pixel *data)
 {
 	FILE *f;
 	int k = w*h;
