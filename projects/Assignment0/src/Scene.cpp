@@ -25,42 +25,45 @@ void Scene::loadNFF(std::string fpath)
 			std::istringstream s(line.substr(1));
 			_c = new Camera();
 			std::cout << "v" << std::endl;
-		}
-		else
-		if (line.substr(0, 5) == "from ") {
-			std::istringstream s(line.substr(5));
-			s >> _c->_from.x; s >> _c->_from.y; s >> _c->_from.z;
-			std::cout <<"from " << _c->_from.x << " " << _c->_from.y << " " << _c->_from.z << std::endl;
-		}
-		else
-		if (line.substr(0, 3) == "at ") {
-			std::istringstream s(line.substr(3));
-			s >> _c->_at.x; s >> _c->_at.y; s >> _c->_at.z;
-			std::cout << "at " << _c->_at.x << " " << _c->_at.y << " " << _c->_at.z << std::endl;
-		}
-		else
-		if (line.substr(0, 3) == "up ") {
-			std::istringstream s(line.substr(3));
-			s >> _c->_up.x; s >> _c->_up.y; s >> _c->_up.z;
-			std::cout << "up " << _c->_up.x << " " << _c->_up.y << " " << _c->_up.z << std::endl;
-		}
-		else
-		if (line.substr(0, 6) == "angle ") {
-			std::istringstream s(line.substr(6));
-			s >> _c->_angle;
-			std::cout << "angle " << _c->_angle << std::endl;
-		}
-		else
-		if (line.substr(0, 7) == "hither ") {
-			std::istringstream s(line.substr(7));
-			s >> _c->_hither;
-			std::cout << "hither " << _c->_hither << std::endl;
-		}
-		else
-		if (line.substr(0, 11) == "resolution ") {
-			std::istringstream s(line.substr(11));
-			s >> _RES.x; s >> _RES.y;
-			std::cout << "resolution " << _RES.x << " " << _RES.y << std::endl;
+			while (std::getline(in, line))
+			{
+				if (line.substr(0, 5) == "from ") {
+					std::istringstream s(line.substr(5));
+					s >> _c->_from.x; s >> _c->_from.y; s >> _c->_from.z;
+					std::cout << "from " << _c->_from.x << " " << _c->_from.y << " " << _c->_from.z << std::endl;
+				}
+				else
+				if (line.substr(0, 3) == "at ") {
+					std::istringstream s(line.substr(3));
+					s >> _c->_at.x; s >> _c->_at.y; s >> _c->_at.z;
+					std::cout << "at " << _c->_at.x << " " << _c->_at.y << " " << _c->_at.z << std::endl;
+				}
+				else
+				if (line.substr(0, 3) == "up ") {
+					std::istringstream s(line.substr(3));
+					s >> _c->_up.x; s >> _c->_up.y; s >> _c->_up.z;
+					std::cout << "up " << _c->_up.x << " " << _c->_up.y << " " << _c->_up.z << std::endl;
+				}
+				else
+				if (line.substr(0, 6) == "angle ") {
+					std::istringstream s(line.substr(6));
+					s >> _c->_angle;
+					std::cout << "angle " << _c->_angle << std::endl;
+				}
+				else
+				if (line.substr(0, 7) == "hither ") {
+					std::istringstream s(line.substr(7));
+					s >> _c->_hither;
+					std::cout << "hither " << _c->_hither << std::endl;
+				}
+				else
+				if (line.substr(0, 11) == "resolution ") {
+					std::istringstream s(line.substr(11));
+					s >> _RES.x; s >> _RES.y;
+					std::cout << "resolution " << _RES.x << " " << _RES.y << std::endl;
+					break;
+				}
+			}
 		}
 		else
 		if (line.substr(0, 2) == "l ") {
