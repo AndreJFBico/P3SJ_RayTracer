@@ -27,7 +27,7 @@ class NFFLoader
 	Camera *_c;
 
 	NFFLoader(){};
-	NFFLoader(NFFLoader &const);
+	NFFLoader(NFFLoader const&);
 
 public:
 	static NFFLoader& getInstance()

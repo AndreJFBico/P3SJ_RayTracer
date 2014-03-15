@@ -1,10 +1,6 @@
 #include "OutConverter.h"
 
 
-OutConverter::OutConverter()
-{
-}
-
 void OutConverter::saveBMP(const char *filename, int w, int h, int dpi, pixel *data)
 {
 	FILE *f;
