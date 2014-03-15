@@ -5,17 +5,17 @@
 
 class Scene
 {
-	int currentPixel;
+	int _currentPixel;
 
 	//Resolution: in pixels, in x and in y.
-	glm::vec2 RES;
+	glm::vec2 _RES;
 
 	//BackgroundColor read from nff file.
-	glm::vec3 backgroundColor;
+	glm::vec3 _backgroundColor;
 
 	//Vector with the number of lights read from the nff file.
 	//Struct light defined in Includes.h.
-	std::vector<light> lights;
+	std::vector<light> _lights;
 
 	//Camera that stores the folowing parameters:
 	/*	From: the eye location in XYZ.
@@ -26,12 +26,12 @@ class Scene
 		bottom pixel row and left column to right column.
 		Hither: distance of the hither plane (if any) from the eye. Mostly
 		needed for hidden surface algorithms.	*/
-	Camera *c;
+	Camera *_c;
 
 public:
 	Scene();
 
-	void loadNFF(const char *filename);
+	void loadNFF(std::string filename);
 
 	void drawScene();
 

@@ -2,13 +2,93 @@
 
 Scene::Scene()
 {
-	RES.x = 0;
-	RES.y = 0;
+	_RES.x = 0;
+	_RES.y = 0;
 }
 
-void Scene::loadNFF(const char *filename)
+void Scene::loadNFF(std::string fpath)
 {
+	std::ifstream in(fpath, std::ios::in);
+	if (!in) { std::cerr << "Cannot open " << fpath << std::endl; exit(1); }	
+	std::string line;
 
+	while (std::getline(in, line))
+	{
+		if (line.substr(0, 2) == "b ") {
+			std::istringstream s(line.substr(2));
+			s >> _backgroundColor.r; s >> _backgroundColor.g; s >> _backgroundColor.b;
+			//prints the result
+			std::cout << "BackgroundColor " << _backgroundColor.r << " " << _backgroundColor.g << " " << _backgroundColor.b << std::endl;
+		} 
+		else
+		if (line.substr(0, 1) == "v") {
+			std::istringstream s(line.substr(1));
+			_c = new Camera();
+			std::cout << "v" << std::endl;
+		}
+		else
+		if (line.substr(0, 5) == "from ") {
+			std::istringstream s(line.substr(5));
+			s >> _c->_from.x; s >> _c->_from.y; s >> _c->_from.z;
+			std::cout <<"from " << _c->_from.x << " " << _c->_from.y << " " << _c->_from.z << std::endl;
+		}
+		else
+		if (line.substr(0, 3) == "at ") {
+			std::istringstream s(line.substr(3));
+			s >> _c->_at.x; s >> _c->_at.y; s >> _c->_at.z;
+			std::cout << "at " << _c->_at.x << " " << _c->_at.y << " " << _c->_at.z << std::endl;
+		}
+		else
+		if (line.substr(0, 3) == "up ") {
+			std::istringstream s(line.substr(3));
+			s >> _c->_up.x; s >> _c->_up.y; s >> _c->_up.z;
+			std::cout << "up " << _c->_up.x << " " << _c->_up.y << " " << _c->_up.z << std::endl;
+		}
+		else
+		if (line.substr(0, 6) == "angle ") {
+			std::istringstream s(line.substr(6));
+			s >> _c->_angle;
+			std::cout << "angle " << _c->_angle << std::endl;
+		}
+		else
+		if (line.substr(0, 7) == "hither ") {
+			std::istringstream s(line.substr(7));
+			s >> _c->_hither;
+			std::cout << "hither " << _c->_hither << std::endl;
+		}
+		else
+		if (line.substr(0, 11) == "resolution ") {
+			std::istringstream s(line.substr(11));
+			s >> _RES.x; s >> _RES.y;
+			std::cout << "resolution " << _RES.x << " " << _RES.y << std::endl;
+		}
+		else
+		if (line.substr(0, 2) == "l ") {
+			std::istringstream s(line.substr(2));
+			light l;
+			s >> l.XYZ.x; s >> l.XYZ.y; s >> l.XYZ.z;
+
+			s >> l.RGB.r; s >> l.RGB.g; s >> l.RGB.b;
+			std::cout << "light "	<< l.XYZ.x << " " << l.XYZ.y << " " << l.XYZ.z 
+									<< l.RGB.r << " " << l.RGB.g << " " << l.RGB.b << std::endl;
+			_lights.push_back(l);
+		}
+		else
+		if (line.substr(0, 2) == "f ") {
+			std::istringstream s(line.substr(2));
+			//TODO
+		}
+		else
+		if (line.substr(0, 3) == "pl ") {
+			std::istringstream s(line.substr(3));
+			//TODO
+		}
+		else
+		if (line.substr(0, 2) == "s ") {
+			std::istringstream s(line.substr(2));
+			//TODO
+		}
+	}
 }
 
 void Scene::drawScene()
@@ -20,25 +100,25 @@ void Scene::drawScene()
 	int height = 480;
 	int n = width*height;
 	pixel *pixels = new pixel[n];
-	RES.x = width;
-	RES.y = height;
-	for (int y = 0; y < RES.y; y++)
+	_RES.x = width;
+	_RES.y = height;
+	for (int y = 0; y < _RES.y; y++)
 	{
-		for (int x = 0; x < RES.x; x++)
+		for (int x = 0; x < _RES.x; x++)
 		{
-			currentPixel = y*width + x;
+			_currentPixel = y*width + x;
 
 			if ((x > 200 && x < 440) && (y > 200 && y < 280))
 			{
-				pixels[currentPixel].RGB.r = 0.2f;
-				pixels[currentPixel].RGB.g = 0.4f;
-				pixels[currentPixel].RGB.b = 0.1f;
+				pixels[_currentPixel].RGB.r = 0.2f;
+				pixels[_currentPixel].RGB.g = 0.4f;
+				pixels[_currentPixel].RGB.b = 0.1f;
 			}
 			else
 			{
-				pixels[currentPixel].RGB.r = 0.0f;
-				pixels[currentPixel].RGB.g = 0.0f;
-				pixels[currentPixel].RGB.b = 0.0f;
+				pixels[_currentPixel].RGB.r = 0.0f;
+				pixels[_currentPixel].RGB.g = 0.0f;
+				pixels[_currentPixel].RGB.b = 0.0f;
 			}
 		}
 	}
