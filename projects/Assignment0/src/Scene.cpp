@@ -27,8 +27,8 @@ void Scene::drawScene()
 	int height = 480;
 	int n = width*height;
 	pixel *pixels = new pixel[n];
-	_RES.x = width;
-	_RES.y = height;
+	_RES.x = (float)width;
+	_RES.y = (float)height;
 	for (int y = 0; y < _RES.y; y++)
 	{
 		for (int x = 0; x < _RES.x; x++)
