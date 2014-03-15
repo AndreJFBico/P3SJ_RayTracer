@@ -2,7 +2,8 @@
 
 Scene::Scene()
 {
-
+	RES_X = 0;
+	RES_Y = 0;
 }
 
 void Scene::loadNFF(const char *filename)
@@ -19,10 +20,11 @@ void Scene::drawScene()
 	int height = 480;
 	int n = width*height;
 	pixel *pixels = new pixel[n];
-
-	for (int x = 0; x < width; x++)
+	RES_X = width;
+	RES_Y = height;
+	for (int y = 0; y < RES_Y; y++)
 	{
-		for (int y = 0; y < height; y++)
+		for (int x = 0; x < RES_X; x++)
 		{
 			currentPixel = y*width + x;
 
@@ -40,8 +42,9 @@ void Scene::drawScene()
 			}
 		}
 	}
-
+	std::cout << "ended rendering ..." << std::endl;
 	savebmp("scene.bmp", width, height, dpi, pixels);
+	std::cout << "saved bmp ..." << std::endl;
 }
 
 void Scene::savebmp(const char *filename, int w, int h, int dpi, pixel *data)

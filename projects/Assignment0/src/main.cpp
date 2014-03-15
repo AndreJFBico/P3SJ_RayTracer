@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
 	Scene *s = new Scene();
-	s->loadNFF("");
+	s->loadNFF("jap.nff");
 	s->drawScene();
 	return 0;
 }
