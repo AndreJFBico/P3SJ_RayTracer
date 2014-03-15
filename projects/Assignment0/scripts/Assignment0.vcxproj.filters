@@ -63,6 +63,9 @@
     <ClCompile Include="..\src\OutConverter.cpp">
       <Filter>Source Files\OutConverter</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Ray.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\fragment_shader.glsl">
@@ -146,6 +149,9 @@
     </ClInclude>
     <ClInclude Include="..\src\NFFLoader.h">
       <Filter>Header Files\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Ray.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
