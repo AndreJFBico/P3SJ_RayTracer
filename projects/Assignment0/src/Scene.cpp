@@ -30,15 +30,15 @@ void Scene::drawScene()
 
 			if ((x > 200 && x < 440) && (y > 200 && y < 280))
 			{
-				pixels[currentPixel].r = 0.2;
-				pixels[currentPixel].g = 0.4;
-				pixels[currentPixel].b = 0.1;
+				pixels[currentPixel].RGB.r = 0.2f;
+				pixels[currentPixel].RGB.g = 0.4f;
+				pixels[currentPixel].RGB.b = 0.1f;
 			}
 			else
 			{
-				pixels[currentPixel].r = 0;
-				pixels[currentPixel].g = 0;
-				pixels[currentPixel].b = 0;
+				pixels[currentPixel].RGB.r = 0.0f;
+				pixels[currentPixel].RGB.g = 0.0f;
+				pixels[currentPixel].RGB.b = 0.0f;
 			}
 		}
 	}
@@ -101,9 +101,9 @@ void Scene::savebmp(const char *filename, int w, int h, int dpi, pixel *data)
 	{
 		pixel rgb = data[i];
 
-		double red = (data[i].r)*255;
-		double green = (data[i].g) * 255;
-		double blue = (data[i].b) * 255;
+		double red = (data[i].RGB.r) * 255;
+		double green = (data[i].RGB.g) * 255;
+		double blue = (data[i].RGB.b) * 255;
 
 		unsigned char color[3] = { (int)floor(blue), (int)floor(green), (int)floor(red)};
 

@@ -16,20 +16,14 @@
 
 struct pixel
 {
-	double r;
-	double g;
-	double b;
+	glm::vec3 RGB;
 };
 
 struct light
 {
 	/*-----*/
-	double x;
-	double y;
-	double z;
+	glm::vec3 XYZ;
 	/*-----*/
-	double r;
-	double g;
-	double b;
+	glm::vec3 RGB;
 	/*-----*/
 };
