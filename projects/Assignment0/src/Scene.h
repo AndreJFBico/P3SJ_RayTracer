@@ -8,7 +8,7 @@ class Scene
 	int currentPixel;
 
 	//Resolution: in pixels, in x and in y.
-	int RES_X, RES_Y;
+	glm::vec2 RES;
 
 	//BackgroundColor read from nff file.
 	glm::vec3 backgroundColor;

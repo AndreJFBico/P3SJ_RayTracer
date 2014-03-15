@@ -2,8 +2,8 @@
 
 Scene::Scene()
 {
-	RES_X = 0;
-	RES_Y = 0;
+	RES.x = 0;
+	RES.y = 0;
 }
 
 void Scene::loadNFF(const char *filename)
@@ -20,11 +20,11 @@ void Scene::drawScene()
 	int height = 480;
 	int n = width*height;
 	pixel *pixels = new pixel[n];
-	RES_X = width;
-	RES_Y = height;
-	for (int y = 0; y < RES_Y; y++)
+	RES.x = width;
+	RES.y = height;
+	for (int y = 0; y < RES.y; y++)
 	{
-		for (int x = 0; x < RES_X; x++)
+		for (int x = 0; x < RES.x; x++)
 		{
 			currentPixel = y*width + x;
 
