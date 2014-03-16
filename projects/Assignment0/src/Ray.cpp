@@ -6,22 +6,16 @@ Ray::Ray()
 	direction = glm::vec3(0.0);
 }
 
-glm::vec3 Ray::calculateWCS(glm::vec2 pixel, glm::vec3 at, glm::vec3 eye, glm::vec3 up)
+glm::vec3 Ray::calculateWCS(
+	glm::vec2 pixel, glm::vec3 at, 
+	glm::vec3 eye, glm::vec3 up, 
+	float w, float h,
+	glm::vec3 Ze, glm::vec3 Xe,
+	glm::vec3 Ye)
 {
-	glm::vec3 Ze;
-	glm::vec3 Ye;
-	glm::vec3 Xe;
 	float u, v;
-	glm::vec3 o, p;
-	float h, w;
-	const float  PI = 3.14159265358979f;
-
-	Ze = glm::normalize(eye - at);
-	Xe = glm::normalize(glm::cross(up, Ze));
-	Ye = glm::normalize(glm::cross(Ze, Xe));
-
-	h = 2 * tan((45*PI / 180) / 2)*(eye - at).length();
-	w = h * 512 / 512;
+	glm::vec3 o;
+	glm::vec3 p;
 
 	o = eye;
 	u = (w * pixel.x) / 511;
@@ -32,7 +26,6 @@ glm::vec3 Ray::calculateWCS(glm::vec2 pixel, glm::vec3 at, glm::vec3 eye, glm::v
 
 	float a = (eye - at).length();
 	direction = -a*Ze + h*(pixel.y / 511 - 1 / 2)*Ye + w*(pixel.x / 511 - 1 / 2)*Xe;
-	std::cout << (glm::normalize(direction)).length();
 
 	return direction;
 }

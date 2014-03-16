@@ -72,6 +72,7 @@ void NFFLoader::load(std::string fpath)
 					break;
 				}
 			}
+			_c->CameraInit();
 		}
 		else
 		if (line.substr(0, 2) == "l ")
