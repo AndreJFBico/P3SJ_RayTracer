@@ -17,6 +17,7 @@ void Scene::loadNFF(std::string fpath)
 	_RES = NFFLoader::getInstance().getRes();
 	_lights = NFFLoader::getInstance().getLight();
 	_c = NFFLoader::getInstance().getCamera();
+	_geometry = NFFLoader::getInstance().getGeometry();
 }
 
 void Scene::drawScene()
@@ -24,8 +25,8 @@ void Scene::drawScene()
 	std::cout << "rendering ..." << std::endl;
 	
 	int dpi = 72;
-	int width = 640;
-	int height = 480;
+	int width = 512;
+	int height = 512;
 	int n = width*height;
 	pixel *pixels = new pixel[n];
 	_RES.x = (float)width;
@@ -37,17 +38,14 @@ void Scene::drawScene()
 			_currentPixel = y*width + x;
 			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
-			if ((x > 200 && x < 440) && (y > 200 && y < 280))
+			for (Geometry * g : _geometry)
 			{
-				pixels[_currentPixel].RGB.r = 0.2f;
-				pixels[_currentPixel].RGB.g = 0.4f;
-				pixels[_currentPixel].RGB.b = 0.1f;
-			}
-			else
-			{
-				pixels[_currentPixel].RGB.r = 0.0f;
-				pixels[_currentPixel].RGB.g = 0.0f;
-				pixels[_currentPixel].RGB.b = 0.0f;
+				if (g->intersect(_r))
+				{
+					pixels[_currentPixel].RGB.r = g->_id;
+					pixels[_currentPixel].RGB.g = g->_id;
+					pixels[_currentPixel].RGB.b = g->_id;
+				}
 			}
 		}
 	}

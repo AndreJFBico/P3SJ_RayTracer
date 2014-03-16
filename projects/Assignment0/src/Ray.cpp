@@ -22,11 +22,12 @@ glm::vec3 Ray::calculateWCS(
 	v = (h * pixel.y) / 511;
 
 	p = o + Xe*u + Ye*v;
-	std::cout << p.x << "  " << p.y << std::endl;
+	//std::cout << p.x << "  " << p.y << std::endl;
 
-	float a = (eye - at).length();
-	direction = -a*Ze + h*(pixel.y / 511 - 1 / 2)*Ye + w*(pixel.x / 511 - 1 / 2)*Xe;
-
+	float a = glm::length(eye - at);
+	direction = -a*Ze + h*((pixel.y / 511) - 0.5f)*Ye + w*((pixel.x / 511) - 0.5f)*Xe;
+	direction = glm::normalize(direction);
+	origin = eye;
 	return direction;
 }
 

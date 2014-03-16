@@ -2,6 +2,7 @@
 
 #include "includes.h"
 #include "Geometry.h"
+#include "Ray.h"
 
 class Sphere : public Geometry
 {
@@ -10,5 +11,5 @@ public:
 	float _radius;
 
 	Sphere();
-	void calcIntersect();
+	bool intersect(Ray *r);
 };

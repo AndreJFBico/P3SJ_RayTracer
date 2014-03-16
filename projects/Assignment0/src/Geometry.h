@@ -1,6 +1,7 @@
 #pragma once
 
 #include "includes.h"
+#include "Ray.h"
 
 class Geometry
 {
@@ -13,8 +14,9 @@ public:
 	//Transmitance.
 	float _T;
 	float _refract_index;
+	float _id;
 
 	Geometry();
 
-	virtual void calcIntersect() = 0;
+	virtual bool intersect(Ray *r) = 0;
 };

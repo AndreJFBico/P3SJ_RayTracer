@@ -7,6 +7,9 @@
 
 class NFFLoader
 {
+	//Float representing Geometry id.
+	float _id;
+
 	//Resolution: in pixels, in x and in y.
 	glm::vec2 _RES;
 
@@ -30,7 +33,7 @@ class NFFLoader
 
 	std::vector<Geometry*> _geometry;
 
-	NFFLoader(){};
+	NFFLoader();
 	NFFLoader(NFFLoader const&);
 
 public:
@@ -46,6 +49,7 @@ public:
 	glm::vec3 getBackgroundColor();
 	std::vector<light> getLight();
 	Camera * getCamera();
+	std::vector<Geometry*> getGeometry();
 
 	void clear();
 

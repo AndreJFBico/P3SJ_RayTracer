@@ -1,5 +1,10 @@
 #include "NFFLoader.h"
 
+NFFLoader::NFFLoader()
+{
+	_id = 0;
+}
+
 void NFFLoader::load(std::string fpath)
 {
 	glm::vec3 RGB = glm::vec3(0.0);
@@ -120,6 +125,8 @@ void NFFLoader::load(std::string fpath)
 			std::cout << "plane v0 " << ver0.x << " " << ver0.y << " " << ver0.z << std::endl;
 			std::cout << "plane v1 " << ver1.x << " " << ver1.y << " " << ver1.z << std::endl;
 			std::cout << "plane v2 " << ver2.x << " " << ver2.y << " " << ver2.z << std::endl;
+			p->_id = _id;
+			_id += 0.1;
 			_geometry.push_back(p);
 		}
 		else
@@ -133,6 +140,8 @@ void NFFLoader::load(std::string fpath)
 			s >> S->_radius;
 			std::cout << "sphere " << S->_center.x << " " << S->_center.y << " " << S->_center.z << std::endl;
 			std::cout << "sphere radius " << S->_radius << std::endl;
+			S->_id = _id;
+			_id += 0.1;
 			_geometry.push_back(S);
 		}
 	}
@@ -156,6 +165,11 @@ std::vector<light> NFFLoader::getLight()
 Camera * NFFLoader::getCamera()
 {
 	return _c;
+}
+
+std::vector<Geometry*> NFFLoader::getGeometry()
+{
+	return _geometry;
 }
 
 void NFFLoader::clear()

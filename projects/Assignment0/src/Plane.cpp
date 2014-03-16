@@ -5,7 +5,7 @@ Plane::Plane() : Geometry()
 	
 }
 
-void Plane::calcIntersect()
+bool Plane::intersect(Ray *r)
 {
-
+	return false;
 }

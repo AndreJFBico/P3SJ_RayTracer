@@ -5,10 +5,10 @@
 class Ray
 {
 
-	glm::vec3 direction;
-
 public:
-	
+	glm::vec3 direction;
+	glm::vec3 origin;
+
 	Ray();
 
 	//receives pixel coord and eye coord and calculates and returns ray direction vector

@@ -8,7 +8,7 @@
 
 class Scene
 {
-	int _currentPixel;
+	int _currentPixel, _id;
 
 	//Resolution: in pixels, in x and in y.
 	glm::vec2 _RES;
@@ -31,6 +31,7 @@ class Scene
 		needed for hidden surface algorithms.	*/
 	Camera *_c;
 	Ray *_r;
+	std::vector<Geometry*> _geometry;
 
 public:
 	Scene();
