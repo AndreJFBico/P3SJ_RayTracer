@@ -38,15 +38,25 @@ void Scene::drawScene()
 			_currentPixel = y*width + x;
 			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
+			float closest = 0;
+			float prevD2Obj = INT_MAX;
 			for (Geometry * g : _geometry)
 			{
 				if (g->intersect(_r))
 				{
-					pixels[_currentPixel].RGB.r = g->_id;
-					pixels[_currentPixel].RGB.g = g->_id;
-					pixels[_currentPixel].RGB.b = g->_id;
+					
+					if (_r->dToObject < prevD2Obj)
+					{
+
+						closest = g->_id;
+						prevD2Obj = _r->dToObject;
+					}
 				}
 			}
+			_r->dToObject = 0;
+			pixels[_currentPixel].RGB.r = closest;
+			pixels[_currentPixel].RGB.g = closest;
+			pixels[_currentPixel].RGB.b = closest;
 		}
 	}
 	std::cout << "ended rendering ..." << std::endl;

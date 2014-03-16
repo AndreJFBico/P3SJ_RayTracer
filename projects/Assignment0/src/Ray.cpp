@@ -4,6 +4,7 @@
 Ray::Ray()
 {
 	direction = glm::vec3(0.0);
+	dToObject = 0;
 }
 
 glm::vec3 Ray::calculateWCS(

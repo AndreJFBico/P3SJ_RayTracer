@@ -7,7 +7,6 @@ Sphere::Sphere() : Geometry()
 
 bool Sphere::intersect(Ray *r)
 {
-	/**/
 	//Squared distance between ray origin and sphere center
 	float squaredDist = glm::dot(r->origin - _center, r->origin - _center);
 
@@ -56,6 +55,7 @@ bool Sphere::intersect(Ray *r)
 	else
 	{
 		//std::cout << "Intersection with sphere..." << std::endl;
+		r->dToObject = squaredDist;
 		return true;
 	}
 }
