@@ -19,6 +19,7 @@ class Scene
 	//Vector with the number of lights read from the nff file.
 	//Struct light defined in Includes.h.
 	std::vector<light> _lights;
+	
 
 	//Camera that stores the folowing parameters:
 	/*	From: the eye location in XYZ.

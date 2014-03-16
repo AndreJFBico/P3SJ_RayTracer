@@ -14,7 +14,7 @@ bool Sphere::intersect(Ray *r)
 	if (squaredDist <= (_radius * _radius))
 	{
 		//Point is in sphere, consider as no intersection existing
-		std::cout << "Point inside sphere..." << std::endl;
+		//std::cout << "Point inside sphere..." << std::endl;
 		return false;
 	}
 
@@ -55,6 +55,7 @@ bool Sphere::intersect(Ray *r)
 	else
 	{
 		//std::cout << "Intersection with sphere..." << std::endl;
+		r->intersectPoint = r->origin + r->direction*t0;
 		r->dToObject = squaredDist;
 		return true;
 	}

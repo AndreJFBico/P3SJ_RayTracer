@@ -113,6 +113,12 @@ void NFFLoader::load(std::string fpath)
 			std::istringstream s(line.substr(3));
 			Plane *p = new Plane();
 			glm::vec3 ver0, ver1, ver2;
+			p->_RGB = RGB;
+			p->_Kd = Kd;
+			p->_Ks = Ks;
+			p->_Shine = Shine;
+			p->_T = T;
+			p->_refract_index = refract_index;
 
 			s >> ver0.x; s >> ver0.y >> ver0.z;
 			s >> ver1.x; s >> ver1.y >> ver1.z;
@@ -135,6 +141,12 @@ void NFFLoader::load(std::string fpath)
 			std::istringstream s(line.substr(2));
 			Sphere * S = new Sphere();
 			glm::vec3 center;
+			S->_RGB = RGB;
+			S->_Kd = Kd;
+			S->_Ks = Ks;
+			S->_Shine = Shine;
+			S->_T = T;
+			S->_refract_index = refract_index;
 			s >> center.x; s >> center.y; s >> center.z;
 			S->_center = center;
 			s >> S->_radius;
