@@ -13,6 +13,7 @@
 #include <map>
 #include <math.h>
 #include <unordered_map>
+#include <algorithm>
 
 #include <glm/glm.hpp>
 

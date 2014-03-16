@@ -5,6 +5,7 @@ Ray::Ray()
 {
 	direction = glm::vec3(0.0);
 	dToObject = 0;
+	shadowfillertype = true;
 }
 
 glm::vec3 Ray::calculateWCS(

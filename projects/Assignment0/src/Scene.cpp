@@ -41,6 +41,7 @@ void Scene::drawScene()
 			Geometry* nearest = NULL;
 			float closest = 0;
 			float prevD2Obj = INT_MAX;
+			glm::vec3 closestintersect;
 			
 			//checks if primary ray intersects with any object
 			for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
@@ -50,6 +51,7 @@ void Scene::drawScene()
 					//checks if object is closer
 					if (_r->dToObject < prevD2Obj)
 					{
+						closestintersect = _r->intersectPoint;
 						nearest = (*it);
 						closest = (*it)->_id;
 						prevD2Obj = _r->dToObject;
@@ -63,16 +65,16 @@ void Scene::drawScene()
 				//vector to store all shadowfillers
 				std::vector<Ray*> _shadowfillers;
 				Sphere* s = (Sphere*)nearest;
-				glm::vec3 normal = _r->intersectPoint - s->_center;
+				glm::vec3 normal = closestintersect - s->_center;
 				std::unordered_map<Ray*, int> _lightsofSF;
 
 
 				//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
 				int j = 0;
 				for (light l : _lights){
-					if (glm::dot(l.XYZ - _r->intersectPoint, normal) > 0){
+					if (glm::dot(l.XYZ - closestintersect, normal) > 0){
 						Ray * r = new Ray();
-						r->origin = _r->intersectPoint;
+						r->origin = closestintersect;
 						r->direction = l.XYZ - r->origin;
 						_shadowfillers.push_back(r);
 						_lightsofSF.emplace(r, j);
@@ -81,35 +83,61 @@ void Scene::drawScene()
 				}
 
 				//for each shadowfiller see if it collides with any object in the scene
-				float prevD2Obj2 = INT_MAX;
 				for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
 				{
-					int i = 0;
 					if (!_shadowfillers.empty()){
-						for (std::vector<Ray*>::iterator it2 = _shadowfillers.begin(); it2 != _shadowfillers.end(); ){
+						for (std::vector<Ray*>::iterator it2 = _shadowfillers.begin(); it2 != _shadowfillers.end(); it2++){
 
 							if ((*it)->intersect(*it2))
-								it2 = _shadowfillers.erase(_shadowfillers.begin() + i);
-
-							else{
-								it2++;
-								i++;
-							}
+								(*it2)->shadowfillertype = false;
 							
 						}
 					}
 				}
 
+				glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.005);
 				glm::vec3 lightComp = glm::vec3(1.0);
 				for (Ray* sf : _shadowfillers){
 					light luz = _lights[_lightsofSF.at(sf)];
-					lightComp.r = lightComp.r * luz.RGB.r;
-					lightComp.g = lightComp.g * luz.RGB.g;
-					lightComp.b = lightComp.b * luz.RGB.b;
+					float attenuation = 1 / (1.0 + LightAttenuation.x * glm::length(closestintersect - luz.XYZ) + LightAttenuation.y * pow(glm::length(closestintersect - luz.XYZ), 2));
+					
+					glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
+
+					glm::vec3 E = glm::normalize(-closestintersect);
+					glm::vec3 H = glm::normalize(L + E);
+
+					//glm::vec3 u = closestintersect - _c->_from;
+					//float diffuse = nearest->_Kd * glm::dot(normal, u);
+					glm::vec3 R = (-L) - (2.0f * normal*(glm::dot(normal, (-L))));
+					//glm::vec3 H = glm::normalize(closestintersect - luz.XYZ + u);
+					
+					float NdotL = fmin(fmax(glm::dot(normal, L), 0.0f), 1.0f);
+
+					float diffuse = nearest->_Kd * NdotL;
+
+					float specular = 0.0;
+
+					if (NdotL > 0){
+						float NdotH = fmin(fmax(glm::dot(R, H), 0.0f), 1.0f);
+						float Blinn = pow(NdotH, nearest->_Shine);
+						specular = nearest->_Ks * Blinn;
+					}
+
+					if (sf->shadowfillertype){
+						lightComp.r = (diffuse + specular) * attenuation * luz.RGB.r + lightComp.r;
+						lightComp.g = (diffuse + specular) * attenuation * luz.RGB.g + lightComp.g;
+						lightComp.b = (diffuse + specular) * attenuation * luz.RGB.b + lightComp.b;
+					}
+					else{
+						lightComp.r = lightComp.r * 0.5f * attenuation;
+						lightComp.g = lightComp.g * 0.5f * attenuation;
+						lightComp.b = lightComp.b * 0.5f * attenuation;
+					}
 				}
-				pixels[_currentPixel].RGB.r = nearest->_RGB.r * lightComp.r * nearest->_Kd;
-				pixels[_currentPixel].RGB.g = nearest->_RGB.g * lightComp.g * nearest->_Kd;
-				pixels[_currentPixel].RGB.b = nearest->_RGB.b * lightComp.b * nearest->_Kd;
+
+				pixels[_currentPixel].RGB.r = lightComp.r;
+				pixels[_currentPixel].RGB.g = lightComp.g;
+				pixels[_currentPixel].RGB.b = lightComp.b;
 			}
 			else{
 				pixels[_currentPixel].RGB.r = _backgroundColor.r;

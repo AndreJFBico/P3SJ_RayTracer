@@ -10,6 +10,7 @@ public:
 	glm::vec3 origin;
 	float dToObject;
 	glm::vec3 intersectPoint;
+	bool shadowfillertype;
 
 	Ray();
 
