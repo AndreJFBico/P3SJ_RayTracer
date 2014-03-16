@@ -44,10 +44,8 @@ void Scene::drawScene()
 			{
 				if (g->intersect(_r))
 				{
-					
 					if (_r->dToObject < prevD2Obj)
 					{
-
 						closest = g->_id;
 						prevD2Obj = _r->dToObject;
 					}
