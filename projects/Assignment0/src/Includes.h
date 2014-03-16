@@ -15,6 +15,8 @@
 
 #include <glm/glm.hpp>
 
+const float  PI = 3.14159265358979f;
+
 #define CAPTION "P3SJ"
 
 struct pixel

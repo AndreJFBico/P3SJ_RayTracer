@@ -35,7 +35,7 @@ void Scene::drawScene()
 		for (int x = 0; x < _RES.x; x++)
 		{
 			_currentPixel = y*width + x;
-			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up);
+			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
 			if ((x > 200 && x < 440) && (y > 200 && y < 280))
 			{
