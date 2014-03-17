@@ -114,7 +114,7 @@ void Scene::drawScene()
 					
 					float NdotL = fmin(fmax(glm::dot(normal, L), 0.0f), 1.0f);
 
-					float diffuse = nearest->_Kd * NdotL;
+					glm::vec3 diffuse = nearest->_RGB * nearest->_Kd * NdotL;
 
 					float specular = 0.0;
 
@@ -125,9 +125,9 @@ void Scene::drawScene()
 					}
 
 					if (sf->shadowfillertype){
-						lightComp.r = (diffuse + specular) * attenuation * luz.RGB.r + lightComp.r;
-						lightComp.g = (diffuse + specular) * attenuation * luz.RGB.g + lightComp.g;
-						lightComp.b = (diffuse + specular) * attenuation * luz.RGB.b + lightComp.b;
+						lightComp.r = (diffuse.r + specular) * attenuation * luz.RGB.r + lightComp.r;
+						lightComp.g = (diffuse.g + specular) * attenuation * luz.RGB.g + lightComp.g;
+						lightComp.b = (diffuse.b + specular) * attenuation * luz.RGB.b + lightComp.b;
 					}
 					else{
 						lightComp.r = fmax(lightComp.r - 0.1f, 0.0) ;
