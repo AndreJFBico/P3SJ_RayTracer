@@ -8,7 +8,7 @@ class Sphere : public Geometry
 {
 public:
 	glm::vec3 _center;
-	float _radius;
+	float _radius; 
 
 	Sphere();
 	bool intersect(Ray *r);
