@@ -16,9 +16,6 @@
 #include <algorithm>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> 
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 const float  PI = 3.14159265358979f;
 
