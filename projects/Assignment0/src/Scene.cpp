@@ -58,7 +58,8 @@ void Scene::drawScene()
 					}
 				}
 			}
-
+			_r->intersectPoint = closestintersect;
+			_r->dToObject = prevD2Obj;
 			//if there was an intersection calculates shadowfillers
 			if (nearest != NULL){
 

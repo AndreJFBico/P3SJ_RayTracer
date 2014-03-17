@@ -21,7 +21,6 @@ bool Sphere::intersect(Ray *r)
 
 	if (disc < 0) //If discriminant is negative no intersection happens
 	{
-		//std::cout << "No intersection with sphere..." << std::endl;
 		return false;
 	}
 	else if (disc == 0)
@@ -45,21 +44,11 @@ bool Sphere::intersect(Ray *r)
 			t1 = tmp;
 		}
 
-		// if t1 is less than zero, the object is in the ray's negative direction
-		// and consequently the ray misses the sphere
 		if (t1 < 0)
 			return false;
 
-		// if t0 is less than zero, the intersection point is at t1
-		if (t0 < 0)
-		{
-			t = t1;
-		}
-		// else the intersection point is at t0
-		else
-		{
-			t = t0;
-		}
+		t = t0;
+
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return true;
