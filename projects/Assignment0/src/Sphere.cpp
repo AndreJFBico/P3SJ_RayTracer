@@ -40,8 +40,8 @@ bool Sphere::intersect(Ray *r)
 	else //If discriminant is positive one or two intersections (two solutions) exists
 	{
 		float sqrt_disc = glm::sqrt(disc);
-		t0 = (-b - sqrt_disc) / (2.0f * a);
-		t1 = (-b + sqrt_disc) / (2.0f * a);
+		t1 = (-b - sqrt_disc) / (2.0f * a);
+		t0 = (-b + sqrt_disc) / (2.0f * a);
 	}
 
 	//If the second intersection has a negative value then the intersections
@@ -52,11 +52,17 @@ bool Sphere::intersect(Ray *r)
 		//std::cout << "No intersection with sphere..." << std::endl;
 		return false;
 	}
-	else
+	else if (t0 > 0)
 	{
 		//std::cout << "Intersection with sphere..." << std::endl;
 		r->intersectPoint = r->origin + r->direction*t0;
-		r->dToObject = squaredDist;
+		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return true;
 	}
+	else
+	{
+		//std::cout << "Intersection with sphere..." << std::endl;
+		r->intersectPoint = r->origin + r->direction*t1;
+		r->dToObject = glm::length(r->intersectPoint - r->origin);
+		return true;
 }

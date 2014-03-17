@@ -95,8 +95,9 @@ void Scene::drawScene()
 					}
 				}
 
-				glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.005);
-				glm::vec3 lightComp = glm::vec3(1.0);
+				glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.0005);
+				glm::vec3 lightComp = glm::vec3(0.0);
+				int i = 0;
 				for (Ray* sf : _shadowfillers){
 					light luz = _lights[_lightsofSF.at(sf)];
 					float attenuation = 1 / (1.0 + LightAttenuation.x * glm::length(closestintersect - luz.XYZ) + LightAttenuation.y * pow(glm::length(closestintersect - luz.XYZ), 2));
@@ -129,9 +130,9 @@ void Scene::drawScene()
 						lightComp.b = (diffuse + specular) * attenuation * luz.RGB.b + lightComp.b;
 					}
 					else{
-						lightComp.r = lightComp.r * 0.5f * attenuation;
-						lightComp.g = lightComp.g * 0.5f * attenuation;
-						lightComp.b = lightComp.b * 0.5f * attenuation;
+						lightComp.r = fmax(lightComp.r - 0.2f, 0.0) ;
+						lightComp.g = fmax(lightComp.g - 0.2f, 0.0);
+						lightComp.b = fmax(lightComp.b - 0.2f, 0.0);
 					}
 				}
 
