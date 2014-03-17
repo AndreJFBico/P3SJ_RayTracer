@@ -41,7 +41,7 @@ void Scene::drawScene()
 			Geometry* nearest = NULL;
 			float closest = 0;
 			float prevD2Obj = INT_MAX;
-			glm::vec3 closestintersect;
+			glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
 			
 			//checks if primary ray intersects with any object
 			for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
@@ -71,28 +71,22 @@ void Scene::drawScene()
 				//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
 				int j = 0;
 				for (light l : _lights){
-					if (glm::dot(l.XYZ - closestintersect, normal) > 0){
+					if (glm::dot(normal,l.XYZ - closestintersect) > 0){
 						Ray * r = new Ray();
 						const float ERR = 0.001f;
 						r->origin = closestintersect + normal * ERR;
 						r->direction = l.XYZ - r->origin;
 						_shadowfillers.push_back(r);
 						_lightsofSF.emplace(r, j);
-					}
-					j++;
-				}
 
-				//for each shadowfiller see if it collides with any object in the scene
-				for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
-				{
-					if (!_shadowfillers.empty()){
-						for (std::vector<Ray*>::iterator it2 = _shadowfillers.begin(); it2 != _shadowfillers.end(); it2++){
-
-							if ((*it)->intersect(*it2))
-								(*it2)->shadowfillertype = false;
-							
+						//See if it collides with any object in the scene
+						for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
+						{
+							if ((*it)->intersect(r))
+								r->shadowfillertype = false;
 						}
 					}
+					j++;
 				}
 
 				glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.0005);
