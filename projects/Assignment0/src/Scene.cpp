@@ -64,8 +64,7 @@ void Scene::drawScene()
 
 				//vector to store all shadowfillers
 				std::vector<Ray*> _shadowfillers;
-				Sphere* s = (Sphere*)nearest;
-				glm::vec3 normal = closestintersect - s->_center;
+				glm::vec3 normal = nearest->calculateNormal(_r);
 				std::unordered_map<Ray*, int> _lightsofSF;
 
 
@@ -130,9 +129,9 @@ void Scene::drawScene()
 						lightComp.b = (diffuse + specular) * attenuation * luz.RGB.b + lightComp.b;
 					}
 					else{
-						lightComp.r = fmax(lightComp.r - 0.2f, 0.0) ;
-						lightComp.g = fmax(lightComp.g - 0.2f, 0.0);
-						lightComp.b = fmax(lightComp.b - 0.2f, 0.0);
+						lightComp.r = fmax(lightComp.r - 0.1f, 0.0) ;
+						lightComp.g = fmax(lightComp.g - 0.1f, 0.0);
+						lightComp.b = fmax(lightComp.b - 0.1f, 0.0);
 					}
 				}
 

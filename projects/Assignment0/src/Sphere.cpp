@@ -23,7 +23,7 @@ bool Sphere::intersect(Ray *r)
 
 	//Calculating the coefficients of the quadratic equation
 	float a = glm::dot(r->direction, r->direction); // a = d*d
-	float b = 2.0f*glm::dot(r->direction, r->origin - _center); // b = 2(o-C)*d
+	float b = 2.0f*glm::dot(r->origin - _center, r->direction); // b = 2(o-C)*d
 	float c = glm::dot(r->origin - _center, r->origin - _center) - (_radius * _radius); // c = (o-C)*(o-C)-R^2
 
 	//Calculate discriminant
@@ -40,8 +40,8 @@ bool Sphere::intersect(Ray *r)
 	else //If discriminant is positive one or two intersections (two solutions) exists
 	{
 		float sqrt_disc = glm::sqrt(disc);
-		t1 = (-b - sqrt_disc) / (2.0f * a);
-		t0 = (-b + sqrt_disc) / (2.0f * a);
+		t0 = (-b - sqrt_disc) / (2.0f * a);
+		t1 = (-b + sqrt_disc) / (2.0f * a);
 	}
 
 	//If the second intersection has a negative value then the intersections
@@ -65,4 +65,11 @@ bool Sphere::intersect(Ray *r)
 		r->intersectPoint = r->origin + r->direction*t1;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return true;
+	}
+}
+
+glm::vec3 Sphere::calculateNormal(Ray* r)
+{
+	glm::vec3 normal = r->intersectPoint - _center;
+	return glm::normalize(normal);
 }

@@ -11,5 +11,8 @@ public:
 	float _radius;
 
 	Sphere();
+
+	glm::vec3 calculateNormal(Ray* r);
+
 	bool intersect(Ray *r);
 };

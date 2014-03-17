@@ -7,7 +7,7 @@ Plane::Plane() : Geometry()
 
 bool Plane::intersect(Ray *r)
 {
-	glm::vec3 normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
+	normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
 
 	float d = glm::dot(_vertexes[1] - r->origin, normal) / glm::dot(r->direction, normal);
 
@@ -18,4 +18,9 @@ bool Plane::intersect(Ray *r)
 		return true;
 
 	return false;
+}
+
+glm::vec3 Plane::calculateNormal(Ray* r)
+{
+	return glm::normalize(normal);
 }
