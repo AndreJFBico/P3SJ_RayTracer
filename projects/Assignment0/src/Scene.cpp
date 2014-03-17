@@ -73,8 +73,9 @@ void Scene::drawScene()
 				for (light l : _lights){
 					if (glm::dot(l.XYZ - closestintersect, normal) > 0){
 						Ray * r = new Ray();
-						r->origin = closestintersect;
-						r->direction = l.XYZ - r->origin;
+						const float ERR = 0.001;
+						r->origin = closestintersect + normal * ERR;
+						r->direction = glm::normalize(l.XYZ - r->origin);
 						_shadowfillers.push_back(r);
 						_lightsofSF.emplace(r, j);
 					}
@@ -86,7 +87,6 @@ void Scene::drawScene()
 				{
 					if (!_shadowfillers.empty()){
 						for (std::vector<Ray*>::iterator it2 = _shadowfillers.begin(); it2 != _shadowfillers.end(); it2++){
-
 							if ((*it)->intersect(*it2))
 								(*it2)->shadowfillertype = false;
 							
@@ -103,7 +103,7 @@ void Scene::drawScene()
 					
 					glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
 
-					glm::vec3 E = glm::normalize(-closestintersect);
+					glm::vec3 E = glm::normalize(_r->origin-closestintersect);
 					glm::vec3 H = glm::normalize(L + E);
 
 					//glm::vec3 u = closestintersect - _c->_from;
