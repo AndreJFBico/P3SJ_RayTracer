@@ -3,19 +3,72 @@
 // 
 //
 ///////////////////////////////////////////////////////////////////////
+
+#include <stdlib.h> 
+#include <GL/glut.h> 
+#include <iostream> 
+#include <stdio.h> 
 #include "Includes.h"
-#include "Scene.h"
+#include "Scene.h" 
 
-int main(int argc, char* argv[])
+#define MAX_DEPTH 6 
+
+Scene* scene = NULL;
+int RES_X, RES_Y;
+
+void reshape(int w, int h)
 {
-	Scene *s = new Scene();
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
-	//Parses NFF file information.
-	s->loadNFF("jap.nff");
-
-	//Renders the Scene and draws the result to a bmp file for the moment.
-	//NOTE: in the future a render window must be used!
-	s->drawScene();
-
-	return 0;
+	gluOrtho2D(0, RES_X - 1, 0, RES_Y - 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
+
+// Draw function by primary ray casting from the eye towards the 
+void drawScene()
+{
+	int n = 512 * 512;
+	pixel* pixels = scene->getPixels();
+	for (int i = 0; i < n; i++){
+		glBegin(GL_POINTS);
+		glColor3f(pixels[i].RGB.r, pixels[i].RGB.g, pixels[i].RGB.b);
+		glVertex2f((i % 512), i / 512);
+		glEnd();
+	}
+	glFlush();
+	//scene->drawScene();
+	printf("Terminou!\n");
+}
+
+int main(int argc, char**argv)
+{
+	scene = new Scene();
+	scene->loadNFF("jap.nff");
+	scene->loadScene();
+	//RES_X = scene->GetCamera()->GetResX();
+	//RES_Y = scene->GetCamera()->GetResY();  printf("resx = %d resy= %d.\n", RES_X, RES_Y);
+
+	RES_X = 512;
+	RES_Y = 512;
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+
+	glutInitWindowSize(RES_X, RES_Y);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("JAP Ray Tracing");
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glutReshapeFunc(reshape);
+	glutDisplayFunc(drawScene);
+	glDisable(GL_DEPTH_TEST);
+
+	glutMainLoop();
+	return 0;
+}
