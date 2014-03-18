@@ -20,7 +20,7 @@ void Scene::loadNFF(std::string fpath)
 	_geometry = NFFLoader::getInstance().getGeometry();
 }
 
-void Scene::drawScene()
+void Scene::loadScene()
 {
 	std::cout << "rendering ..." << std::endl;
 	
@@ -28,7 +28,7 @@ void Scene::drawScene()
 	int width = 512;
 	int height = 512;
 	int n = width*height;
-	pixel *pixels = new pixel[n];
+	_pixels = new pixel[n];
 	_RES.x = (float)width;
 	_RES.y = (float)height;
 	for (int y = 0; y < _RES.y; y++)
@@ -131,19 +131,18 @@ void Scene::drawScene()
 					}
 				}
 
-				pixels[_currentPixel].RGB.r = fmin(fmax(lightComp.r,0.0f), 1.0f);
-				pixels[_currentPixel].RGB.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
-				pixels[_currentPixel].RGB.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
+				_pixels[_currentPixel].RGB.r = fmin(fmax(lightComp.r,0.0f), 1.0f);
+				_pixels[_currentPixel].RGB.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
+				_pixels[_currentPixel].RGB.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
 			}
 			else{
-				pixels[_currentPixel].RGB.r = _backgroundColor.r;
-				pixels[_currentPixel].RGB.g = _backgroundColor.g;
-				pixels[_currentPixel].RGB.b = _backgroundColor.b;
+				_pixels[_currentPixel].RGB.r = _backgroundColor.r;
+				_pixels[_currentPixel].RGB.g = _backgroundColor.g;
+				_pixels[_currentPixel].RGB.b = _backgroundColor.b;
 			}
 			_r->dToObject = 0;
 		}
 	}
 	std::cout << "ended rendering ..." << std::endl;
-	OutConverter::getInstance().saveBMP("scene.bmp", width, height, dpi, pixels);
-	std::cout << "saved bmp ..." << std::endl;
+	
 }

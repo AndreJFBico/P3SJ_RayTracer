@@ -33,13 +33,16 @@ class Scene
 	Camera *_c;
 	Ray *_r;
 	std::vector<Geometry*> _geometry;
+	pixel *_pixels;
 
 public:
 	Scene();
 
 	void loadNFF(std::string filename);
 
-	void drawScene();
+	void loadScene();
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
+
+	pixel* getPixels(){ return _pixels; };
 };
