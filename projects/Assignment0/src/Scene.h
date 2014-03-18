@@ -8,7 +8,7 @@
 
 class Scene
 {
-	int _currentPixel, _id;
+	int _currentPixel, _id, _dpi, _width, _height;
 
 	//Resolution: in pixels, in x and in y.
 	glm::vec2 _RES;
@@ -33,6 +33,8 @@ class Scene
 	Camera *_c;
 	Ray *_r;
 	std::vector<Geometry*> _geometry;
+
+	//structure to store all the pixels after the rendering
 	pixel *_pixels;
 
 public:
@@ -45,4 +47,10 @@ public:
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 
 	pixel* getPixels(){ return _pixels; };
+
+	int getWidth(){ return _width; }
+
+	int getHeight() { return _height; }
+
+	int getDpi(){ return _dpi; }
 };

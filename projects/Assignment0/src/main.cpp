@@ -32,16 +32,16 @@ void reshape(int w, int h)
 // Draw function by primary ray casting from the eye towards the 
 void drawScene()
 {
-	int n = 512 * 512;
+	int n = RES_X * RES_Y;
+
 	pixel* pixels = scene->getPixels();
 	for (int i = 0; i < n; i++){
 		glBegin(GL_POINTS);
 		glColor3f(pixels[i].RGB.r, pixels[i].RGB.g, pixels[i].RGB.b);
-		glVertex2f((i % 512), i / 512);
+		glVertex2f((i % 512), (i / 512));
 		glEnd();
 	}
 	glFlush();
-	//scene->drawScene();
 	printf("Terminou!\n");
 }
 
@@ -50,11 +50,9 @@ int main(int argc, char**argv)
 	scene = new Scene();
 	scene->loadNFF("jap.nff");
 	scene->loadScene();
-	//RES_X = scene->GetCamera()->GetResX();
-	//RES_Y = scene->GetCamera()->GetResY();  printf("resx = %d resy= %d.\n", RES_X, RES_Y);
 
-	RES_X = 512;
-	RES_Y = 512;
+	RES_X = scene->getWidth();
+	RES_Y = scene->getHeight();
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
@@ -71,4 +69,4 @@ int main(int argc, char**argv)
 
 	glutMainLoop();
 	return 0;
-}
+}

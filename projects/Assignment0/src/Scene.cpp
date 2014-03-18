@@ -7,6 +7,9 @@ Scene::Scene()
 	_lights = *(new std::vector<light>());
 	_c = NULL;
 	_r = new Ray();
+	_dpi = 72;
+	_width = 512;
+	_height = 512;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -24,18 +27,15 @@ void Scene::loadScene()
 {
 	std::cout << "rendering ..." << std::endl;
 	
-	int dpi = 72;
-	int width = 512;
-	int height = 512;
-	int n = width*height;
+	int n = _width*_height;
 	_pixels = new pixel[n];
-	_RES.x = (float)width;
-	_RES.y = (float)height;
+	_RES.x = (float)_width;
+	_RES.y = (float)_height;
 	for (int y = 0; y < _RES.y; y++)
 	{
 		for (int x = 0; x < _RES.x; x++)
 		{
-			_currentPixel = y*width + x;
+			_currentPixel = y*_width + x;
 			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
 			Geometry* nearest = NULL;
