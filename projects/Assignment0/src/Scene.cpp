@@ -125,9 +125,9 @@ void Scene::drawScene()
 						lightComp.b = (diffuse.b + specular) * attenuation * luz.RGB.b + lightComp.b;
 					}
 					else{
-						lightComp.r = fmax(lightComp.r - 0.1f, 0.0);
-						lightComp.g = fmax(lightComp.g - 0.1f, 0.0);
-						lightComp.b = fmax(lightComp.b - 0.1f, 0.0);
+						lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+						lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+						lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
 					}
 				}
 
