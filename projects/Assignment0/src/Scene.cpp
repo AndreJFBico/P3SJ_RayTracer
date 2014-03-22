@@ -70,20 +70,20 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	//checks if primary ray intersects with any object
 	for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
 	{
-		if ((*it)->intersect(_r))
+		if ((*it)->intersect(ray))
 		{
 			//checks if object is closer
-			if (_r->dToObject < prevD2Obj)
+			if (ray->dToObject < prevD2Obj)
 			{
-				closestintersect = _r->intersectPoint;
+				closestintersect = ray->intersectPoint;
 				nearest = (*it);
 				closest = (*it)->_id;
-				prevD2Obj = _r->dToObject;
+				prevD2Obj = ray->dToObject;
 			}
 		}
 	}
-	_r->intersectPoint = closestintersect;
-	_r->dToObject = prevD2Obj;
+	ray->intersectPoint = closestintersect;
+	ray->dToObject = prevD2Obj;
 
 	//if there was an intersection calculates shadowfillers
 	if (nearest == NULL)
@@ -95,7 +95,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 
 	//vector to store all shadowfillers
 	std::vector<Ray*> _shadowfillers;
-	glm::vec3 normal = nearest->calculateNormal(_r);
+	glm::vec3 normal = nearest->calculateNormal(ray);
 	std::unordered_map<Ray*, int> _lightsofSF;
 
 
@@ -129,7 +129,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 					
 		glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
 
-		glm::vec3 E = glm::normalize(_r->origin - closestintersect);
+		glm::vec3 E = glm::normalize(ray->origin - closestintersect);
 		glm::vec3 H = glm::normalize(L + E);
 
 		//glm::vec3 u = closestintersect - _c->_from;
@@ -179,7 +179,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 		glm::vec3 tColor;
 		Ray * tRay = ray->refract(normal, ray->refractionIndex);
 		tColor = trace(geometry, tRay, depth + 1);
-		lightComp = tColor* nearest->_Ks + lightComp;
+		lightComp = tColor* nearest->_T + lightComp;
 	}
 
 	//Clamp

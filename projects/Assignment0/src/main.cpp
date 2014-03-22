@@ -48,7 +48,7 @@ void drawScene()
 int main(int argc, char**argv)
 {
 	scene = new Scene();
-	scene->loadNFF("balls_low.nff");
+	scene->loadNFF("balls_medium.nff");
 	scene->loadScene();
 
 	RES_X = scene->getWidth();
