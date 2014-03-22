@@ -115,14 +115,14 @@ void Scene::loadScene()
 
 					if (NdotL > 0){
 						float NdotH = fmin(fmax(glm::dot(R, H), 0.0f), 1.0f);
-						float Blinn = pow(NdotH, nearest->_Shine);
+						float Blinn = pow(NdotH, nearest->_Shine/8);
 						specular = nearest->_Ks * Blinn;
 					}
 
 					if (sf->shadowfillertype){
-						lightComp.r = (diffuse.r + specular) * attenuation * luz.RGB.r + lightComp.r;
-						lightComp.g = (diffuse.g + specular) * attenuation * luz.RGB.g + lightComp.g;
-						lightComp.b = (diffuse.b + specular) * attenuation * luz.RGB.b + lightComp.b;
+						lightComp.r = (diffuse.r + specular/2) * attenuation * luz.RGB.r + lightComp.r;
+						lightComp.g = (diffuse.g + specular/2) * attenuation * luz.RGB.g + lightComp.g;
+						lightComp.b = (diffuse.b + specular/2) * attenuation * luz.RGB.b + lightComp.b;
 					}
 					else{
 						lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
