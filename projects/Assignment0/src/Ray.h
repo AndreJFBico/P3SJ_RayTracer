@@ -11,6 +11,7 @@ public:
 	float dToObject;
 	glm::vec3 intersectPoint;
 	bool shadowfillertype;
+	float refractionIndex;
 
 	Ray();
 
@@ -23,6 +24,9 @@ public:
 		glm::vec3 Ye);
 
 	void trace();
+
+	Ray* reflect(glm::vec3 normal);
+	Ray* refract(glm::vec3 normal, float refract);
 
 	virtual ~Ray();
 };

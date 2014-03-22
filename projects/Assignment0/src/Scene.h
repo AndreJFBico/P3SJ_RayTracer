@@ -36,6 +36,7 @@ class Scene
 
 	//structure to store all the pixels after the rendering
 	pixel *_pixels;
+	int _maxDepth;
 
 public:
 	Scene();
@@ -43,6 +44,8 @@ public:
 	void loadNFF(std::string filename);
 
 	void loadScene();
+
+	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth);
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 
