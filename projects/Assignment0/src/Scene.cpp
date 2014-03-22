@@ -7,7 +7,9 @@ Scene::Scene()
 	_lights = *(new std::vector<light>());
 	_c = NULL;
 	_r = new Ray();
-	_maxDepth = 0;
+	_dpi = 72;
+	_width = 512;
+	_height = 512;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -25,20 +27,15 @@ void Scene::loadScene()
 {
 	std::cout << "rendering ..." << std::endl;
 	
-	int dpi = 72;
-	int width = 512;
-	int height = 512;
-	int n = width*height;
+	int n = _width*_height;
 	_pixels = new pixel[n];
-	_RES.x = (float)width;
-	_RES.y = (float)height;
-
-
+	_RES.x = (float)_width;
+	_RES.y = (float)_height;
 	for (int y = 0; y < _RES.y; y++)
 	{
 		for (int x = 0; x < _RES.x; x++)
 		{
-			_currentPixel = y*width + x;
+			_currentPixel = y*_width + x;
 			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
 			glm::vec3 finalColor = glm::vec3(0.0);
@@ -63,7 +60,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	float prevD2Obj = INT_MAX;
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
 	ray->dToObject = 0;
-
+			
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DE INTERSECÇÃO +++++++++++++++
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -128,7 +125,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	for (Ray* sf : _shadowfillers){
 		light luz = _lights[_lightsofSF.at(sf)];
 		float attenuation = 1 / (1.0 + LightAttenuation.x * glm::length(closestintersect - luz.XYZ) + LightAttenuation.y * pow(glm::length(closestintersect - luz.XYZ), 2));
-
+					
 		glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
 
 		glm::vec3 E = glm::normalize(_r->origin - closestintersect);
@@ -138,7 +135,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 		//float diffuse = nearest->_Kd * glm::dot(normal, u);
 		glm::vec3 R = (-L) - (2.0f * normal*(glm::dot(normal, (-L))));
 		//glm::vec3 H = glm::normalize(closestintersect - luz.XYZ + u);
-
+					
 		float NdotL = fmin(fmax(glm::dot(normal, L), 0.0f), 1.0f);
 
 		glm::vec3 diffuse = nearest->_RGB * nearest->_Kd * NdotL;
@@ -173,7 +170,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 		//rRay = reflect
 		//rColor = trace
 		lightComp = rColor* nearest->_Ks + lightComp;
-	}
+		}
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DA COR DO RAIO REFRACTADO +++++++++++++++
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -190,5 +187,5 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
 	
 	return lightComp;
-
+	
 }

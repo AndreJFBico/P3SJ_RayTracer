@@ -38,6 +38,17 @@ void Ray::trace()
 
 }
 
+Ray* Ray::reflect(glm::vec3 normal, glm::vec3 intersect)
+{
+	Ray* rRay = new Ray();
+	glm::vec3 dir = rRay->direction;
+	const float ERR = 0.001f;
+	rRay->origin = intersect + ERR;
+	rRay->direction = dir - 2.0f * (normal*(glm::dot(normal, dir)));
+
+	return rRay;
+}
+
 Ray::~Ray()
 {
 }
