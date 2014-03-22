@@ -5,7 +5,8 @@ Ray::Ray()
 {
 	direction = glm::vec3(0.0);
 	dToObject = 0;
-	shadowfillertype = true;
+	shadowfillertype = true; 
+	refractionIndex = 1.0f;
 }
 
 glm::vec3 Ray::calculateWCS(
@@ -38,13 +39,29 @@ void Ray::trace()
 
 }
 
-Ray* Ray::reflect(glm::vec3 normal, glm::vec3 intersect)
+Ray* Ray::reflect(glm::vec3 normal)
 {
 	Ray* rRay = new Ray();
-	glm::vec3 dir = rRay->direction;
 	const float ERR = 0.001f;
-	rRay->origin = intersect + ERR;
-	rRay->direction = dir - 2.0f * (normal*(glm::dot(normal, dir)));
+	rRay->direction = direction - 2.0f * (normal*(glm::dot(normal, direction)));
+	rRay->origin = intersectPoint + rRay->direction *ERR;
+
+	return rRay;
+}
+
+Ray* Ray::refract(glm::vec3 normal, float refract)
+{
+	Ray* rRay = new Ray();
+	glm::vec3 vT = (glm::dot(direction, normal))*normal - direction;
+	double senThetaI = glm::length(vT);
+	double senThetaT = (refractionIndex / refract) * senThetaI;
+	double cosThetaT = sqrt(1 - (senThetaT*senThetaI));
+	glm::vec3 t = glm::normalize(vT);
+
+	const float ERR = 0.001f;
+	rRay->direction = (float)senThetaT * t + (float)cosThetaT * (-normal);
+	rRay->origin = intersectPoint + rRay->direction *ERR;
+	rRay->refractionIndex = refract;
 
 	return rRay;
 }

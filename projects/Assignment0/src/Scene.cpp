@@ -10,6 +10,7 @@ Scene::Scene()
 	_dpi = 72;
 	_width = 512;
 	_height = 512;
+	_maxDepth = 1;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -167,17 +168,17 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	if (nearest->_Ks > 0){
 		glm::vec3 rColor;
-		//rRay = reflect
-		//rColor = trace
+		Ray* rRay = ray->reflect(normal);
+		rColor = trace(geometry, rRay, depth + 1);
 		lightComp = rColor* nearest->_Ks + lightComp;
-		}
+	}
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DA COR DO RAIO REFRACTADO +++++++++++++++
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	if (nearest->_T > 0){
 		glm::vec3 tColor;
-		//tRay = reflect
-		//tColor = trace
+		Ray * tRay = ray->refract(normal, ray->refractionIndex);
+		tColor = trace(geometry, tRay, depth + 1);
 		lightComp = tColor* nearest->_Ks + lightComp;
 	}
 
