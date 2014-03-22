@@ -81,6 +81,9 @@
     <ClCompile Include="..\src\Ray.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Triangle.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\fragment_shader.glsl">
@@ -175,6 +178,9 @@
       <Filter>Header Files\OutConverter</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Ray.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Triangle.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>

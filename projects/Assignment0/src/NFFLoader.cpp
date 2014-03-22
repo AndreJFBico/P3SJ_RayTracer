@@ -156,6 +156,34 @@ void NFFLoader::load(std::string fpath)
 			_id += 0.1;
 			_geometry.push_back(S);
 		}
+		else
+		if (line.substr(0, 2) == "p ")
+		{
+			std::istringstream s(line.substr(2));
+			int vertex_count = 0;
+			Triangle * t = new Triangle();
+			glm::vec3 vertex;
+			t->_RGB = RGB;
+			t->_Kd = Kd;
+			t->_Ks = Ks;
+			t->_Shine = Shine;
+			t->_T = T;
+			t->_refract_index = refract_index;
+			s >> vertex_count;
+			std::cout << "Triangle " << vertex_count << std::endl;
+			for (int i = 0; i < vertex_count; i ++)
+			{
+				std::getline(in, line);
+				std::istringstream s(line);
+				s >> vertex.x; s >> vertex.y; s >> vertex.z; 
+				t->_vertexes.push_back(vertex);
+				std::cout << "triangle vertex " << vertex.x << " " << vertex.y << " " << vertex.z << std::endl;
+			}
+
+			t->_id = _id;
+			_id += 0.1;
+			_geometry.push_back(t);
+		}
 	}
 }
 

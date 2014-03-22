@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "Triangle.h"
 
 class NFFLoader
 {
