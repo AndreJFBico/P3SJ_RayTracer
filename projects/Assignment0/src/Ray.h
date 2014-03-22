@@ -24,6 +24,7 @@ public:
 
 	void trace();
 
+	Ray* reflect(glm::vec3 normal, glm::vec3 intersect);
 	virtual ~Ray();
 };
 
