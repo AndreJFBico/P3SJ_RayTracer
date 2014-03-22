@@ -16,8 +16,8 @@ bool Triangle::intersect(Ray *r)
 	r->intersectPoint = r->origin + r->direction*d;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 
-	if (d>0)
-		return true;
+	if (d<0)
+		return false;
 
 
 	int i0, i1, i2;
