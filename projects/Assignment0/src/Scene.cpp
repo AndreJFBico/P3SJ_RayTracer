@@ -10,7 +10,7 @@ Scene::Scene()
 	_dpi = 72;
 	_width = 512;
 	_height = 512;
-	_maxDepth = 1;
+	_maxDepth = 3;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -155,9 +155,9 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 			lightComp.b = (diffuse.b + specular / 2) * attenuation * luz.RGB.b + lightComp.b;
 		}
 		else{
-			lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
-			lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
-			lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+			lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
+			lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
+			lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
 		}
 	}
 

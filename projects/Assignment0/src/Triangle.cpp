@@ -8,10 +8,10 @@ Triangle::Triangle() : Geometry()
 bool Triangle::intersect(Ray *r)
 {
 	//Calculating normal.
-	glm::vec3 N = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
-	glm::normalize(N);
+	normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
+	glm::normalize(normal);
 
-	float d = glm::dot(_vertexes[1] - r->origin, N) / glm::dot(r->direction, N);
+	float d = glm::dot(_vertexes[1] - r->origin, normal) / glm::dot(r->direction, normal);
 
 	r->intersectPoint = r->origin + r->direction*d;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
@@ -22,19 +22,19 @@ bool Triangle::intersect(Ray *r)
 
 	int i0, i1, i2;
 	//Calculating indices.
-	if (N.x > N.y && N.x > N.z)
+	if (normal.x > normal.y && normal.x > normal.z)
 	{
 		i0 = 0;
 		i1 = 1;
 		i2 = 2;
 	}
-	else if (N.y > N.x && N.y > N.z)
+	else if (normal.y > normal.x && normal.y > normal.z)
 	{
 		i1 = 0;
 		i0 = 1;
 		i2 = 2;
 	}
-	else if (N.z > N.x && N.z > N.y)
+	else if (normal.z > normal.x && normal.z > normal.y)
 	{
 		i1 = 0;
 		i2 = 1;
@@ -78,5 +78,5 @@ bool Triangle::intersect(Ray *r)
 
 glm::vec3 Triangle::calculateNormal(Ray* r)
 {
-	return glm::vec3(0.0, 0.0, 0.0);
+	return glm::normalize(normal);
 }
