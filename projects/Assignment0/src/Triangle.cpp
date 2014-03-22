@@ -8,7 +8,18 @@ Triangle::Triangle() : Geometry()
 bool Triangle::intersect(Ray *r)
 {
 	//Calculating normal.
-	glm::vec3 N = glm::cross((_vertexes.at(1) - _vertexes.at(0)), (_vertexes.at(2)- _vertexes.at(1)));
+	glm::vec3 N = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
+	glm::normalize(N);
+
+	float d = glm::dot(_vertexes[1] - r->origin, N) / glm::dot(r->direction, N);
+
+	r->intersectPoint = r->origin + r->direction*d;
+	r->dToObject = glm::length(r->intersectPoint - r->origin);
+
+	if (d>0)
+		return true;
+
+
 	int i0, i1, i2;
 	//Calculating indices.
 	if (N.x > N.y && N.x > N.z)
