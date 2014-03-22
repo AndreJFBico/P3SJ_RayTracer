@@ -120,7 +120,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 		j++;
 	}
 
-	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.0005);
+	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.000001f);
 	glm::vec3 lightComp = glm::vec3(0.0);
 	int i = 0;
 	for (Ray* sf : _shadowfillers){
@@ -177,7 +177,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	if (nearest->_T > 0){
 		glm::vec3 tColor;
-		Ray * tRay = ray->refract(normal, ray->refractionIndex);
+		Ray * tRay = ray->refract(normal, nearest->_refract_index);
 		tColor = trace(geometry, tRay, depth + 1);
 		lightComp = tColor* nearest->_T + lightComp;
 	}

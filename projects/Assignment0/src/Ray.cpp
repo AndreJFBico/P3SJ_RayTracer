@@ -52,14 +52,14 @@ Ray* Ray::reflect(glm::vec3 normal)
 Ray* Ray::refract(glm::vec3 normal, float refract)
 {
 	Ray* rRay = new Ray();
-	glm::vec3 vT = (glm::dot(direction, normal))*normal - direction;
-	double senThetaI = glm::length(vT);
-	double senThetaT = (refractionIndex / refract) * senThetaI;
-	double cosThetaT = sqrt(1 - (senThetaT*senThetaI));
+	glm::vec3 vT = (glm::dot(-direction, normal))*normal - (-direction);
+	float senThetaI = glm::length(vT);
+	float senThetaT = (refractionIndex / refract) * senThetaI;
+	float cosThetaT = sqrt(1 - (senThetaT*senThetaT));
 	glm::vec3 t = glm::normalize(vT);
 
 	const float ERR = 0.001f;
-	rRay->direction = (float)senThetaT * t + (float)cosThetaT * (-normal);
+	rRay->direction = senThetaT * t + cosThetaT * (-normal);
 	rRay->origin = intersectPoint + rRay->direction *ERR;
 	rRay->refractionIndex = refract;
 
