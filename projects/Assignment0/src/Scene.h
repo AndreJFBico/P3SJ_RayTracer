@@ -45,7 +45,7 @@ public:
 
 	void loadScene();
 
-	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth);
+	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted);
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 

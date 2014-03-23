@@ -13,9 +13,8 @@ bool Triangle::intersect(Ray *r)
 
 	float d = glm::dot(_vertexes[1] - r->origin, normal) / glm::dot(r->direction, normal);
 
-	r->intersectPoint = r->origin + r->direction*d;
-	r->dToObject = glm::length(r->intersectPoint - r->origin);
-
+	glm::vec3 P = r->origin + r->direction*d;
+	
 	if (d<0)
 		return false;
 
@@ -43,7 +42,7 @@ bool Triangle::intersect(Ray *r)
 
 	glm::vec3 O = r->origin;
 	glm::vec3 D = r->direction;
-	glm::vec3 P = r->intersectPoint;
+	
 	//_vertexes
 
 	glm::vec3 u, v;
@@ -72,7 +71,11 @@ bool Triangle::intersect(Ray *r)
 		}
 	}
 	if (Beta >= 0.0f && Alfa >= 0.0f && (Alfa + Beta) <= 1)
+	{
+		r->intersectPoint = P;
+		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return true;
+	}
 	return false;
 }
 

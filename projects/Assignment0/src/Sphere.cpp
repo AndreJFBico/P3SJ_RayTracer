@@ -44,15 +44,18 @@ bool Sphere::intersect(Ray *r)
 			t1 = tmp;
 		}
 
-		if (t1 < 0)
+		if (t1 < 0 )
 			return false;
-
 		t = t0;
+		//origin of the ray is inside
+		if (t0 < 0 && t1 > 0)
+			return false;
 
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return true;
 	}
+	return false;
 }
 
 glm::vec3 Sphere::calculateNormal(Ray* r)

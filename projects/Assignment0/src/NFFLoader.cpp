@@ -25,7 +25,7 @@ void NFFLoader::load(std::string fpath)
 			std::istringstream s(line.substr(2));
 			s >> _backgroundColor.r; s >> _backgroundColor.g; s >> _backgroundColor.b;
 			//prints the result
-			std::cout << "BackgroundColor " << _backgroundColor.r << " " << _backgroundColor.g << " " << _backgroundColor.b << std::endl;
+			//std::cout << "BackgroundColor " << _backgroundColor.r << " " << _backgroundColor.g << " " << _backgroundColor.b << std::endl;
 		}
 		else
 		if (line.substr(0, 1) == "v") {
@@ -38,42 +38,42 @@ void NFFLoader::load(std::string fpath)
 				{
 					std::istringstream s(line.substr(5));
 					s >> _c->_from.x; s >> _c->_from.y; s >> _c->_from.z;
-					std::cout << "from " << _c->_from.x << " " << _c->_from.y << " " << _c->_from.z << std::endl;
+					//std::cout << "from " << _c->_from.x << " " << _c->_from.y << " " << _c->_from.z << std::endl;
 				}
 				else
 				if (line.substr(0, 3) == "at ")
 				{
 					std::istringstream s(line.substr(3));
 					s >> _c->_at.x; s >> _c->_at.y; s >> _c->_at.z;
-					std::cout << "at " << _c->_at.x << " " << _c->_at.y << " " << _c->_at.z << std::endl;
+					//std::cout << "at " << _c->_at.x << " " << _c->_at.y << " " << _c->_at.z << std::endl;
 				}
 				else
 				if (line.substr(0, 3) == "up ")
 				{
 					std::istringstream s(line.substr(3));
 					s >> _c->_up.x; s >> _c->_up.y; s >> _c->_up.z;
-					std::cout << "up " << _c->_up.x << " " << _c->_up.y << " " << _c->_up.z << std::endl;
+					//std::cout << "up " << _c->_up.x << " " << _c->_up.y << " " << _c->_up.z << std::endl;
 				}
 				else
 				if (line.substr(0, 6) == "angle ")
 				{
 					std::istringstream s(line.substr(6));
 					s >> _c->_angle;
-					std::cout << "angle " << _c->_angle << std::endl;
+					//std::cout << "angle " << _c->_angle << std::endl;
 				}
 				else
 				if (line.substr(0, 7) == "hither ")
 				{
 					std::istringstream s(line.substr(7));
 					s >> _c->_hither;
-					std::cout << "hither " << _c->_hither << std::endl;
+					//std::cout << "hither " << _c->_hither << std::endl;
 				}
 				else
 				if (line.substr(0, 11) == "resolution ")
 				{
 					std::istringstream s(line.substr(11));
 					s >> _RES.x; s >> _RES.y;
-					std::cout << "resolution " << _RES.x << " " << _RES.y << std::endl;
+					//std::cout << "resolution " << _RES.x << " " << _RES.y << std::endl;
 					break;
 				}
 			}
@@ -87,8 +87,8 @@ void NFFLoader::load(std::string fpath)
 			s >> l.XYZ.x; s >> l.XYZ.y; s >> l.XYZ.z;
 
 			s >> l.RGB.r; s >> l.RGB.g; s >> l.RGB.b;
-			std::cout << "light " << l.XYZ.x << " " << l.XYZ.y << " " << l.XYZ.z
-				<< l.RGB.r << " " << l.RGB.g << " " << l.RGB.b << std::endl;
+			//std::cout << "light " << l.XYZ.x << " " << l.XYZ.y << " " << l.XYZ.z
+			//	<< l.RGB.r << " " << l.RGB.g << " " << l.RGB.b << std::endl;
 			_lights.push_back(l);
 		}
 		else
@@ -103,9 +103,9 @@ void NFFLoader::load(std::string fpath)
 			T; s >> T;
 			refract_index; s >> refract_index;
 
-			std::cout << "f " << RGB.r << " " << RGB.g << " " << RGB.b <<
-				" " << Kd << " " << Ks << " " << Shine << " " <<
-				T << " " << refract_index << " " << std::endl;
+			//std::cout << "f " << RGB.r << " " << RGB.g << " " << RGB.b <<
+			//	" " << Kd << " " << Ks << " " << Shine << " " <<
+			//	T << " " << refract_index << " " << std::endl;
 		}
 		else
 		if (line.substr(0, 3) == "pl ")
@@ -128,9 +128,9 @@ void NFFLoader::load(std::string fpath)
 			p->_vertexes.push_back(ver1);
 			p->_vertexes.push_back(ver2);
 
-			std::cout << "plane v0 " << ver0.x << " " << ver0.y << " " << ver0.z << std::endl;
-			std::cout << "plane v1 " << ver1.x << " " << ver1.y << " " << ver1.z << std::endl;
-			std::cout << "plane v2 " << ver2.x << " " << ver2.y << " " << ver2.z << std::endl;
+			//std::cout << "plane v0 " << ver0.x << " " << ver0.y << " " << ver0.z << std::endl;
+			//std::cout << "plane v1 " << ver1.x << " " << ver1.y << " " << ver1.z << std::endl;
+			//std::cout << "plane v2 " << ver2.x << " " << ver2.y << " " << ver2.z << std::endl;
 			p->_id = _id;
 			_id += 0.1;
 			_geometry.push_back(p);
@@ -150,8 +150,8 @@ void NFFLoader::load(std::string fpath)
 			s >> center.x; s >> center.y; s >> center.z;
 			S->_center = center;
 			s >> S->_radius;
-			std::cout << "sphere " << S->_center.x << " " << S->_center.y << " " << S->_center.z << std::endl;
-			std::cout << "sphere radius " << S->_radius << std::endl;
+			//std::cout << "sphere " << S->_center.x << " " << S->_center.y << " " << S->_center.z << std::endl;
+			//std::cout << "sphere radius " << S->_radius << std::endl;
 			S->_id = _id;
 			_id += 0.1;
 			_geometry.push_back(S);
@@ -170,14 +170,14 @@ void NFFLoader::load(std::string fpath)
 			t->_T = T;
 			t->_refract_index = refract_index;
 			s >> vertex_count;
-			std::cout << "Triangle " << vertex_count << std::endl;
+			//std::cout << "Triangle " << vertex_count << std::endl;
 			for (int i = 0; i < vertex_count; i ++)
 			{
 				std::getline(in, line);
 				std::istringstream s(line);
 				s >> vertex.x; s >> vertex.y; s >> vertex.z; 
 				t->_vertexes.push_back(vertex);
-				std::cout << "triangle vertex " << vertex.x << " " << vertex.y << " " << vertex.z << std::endl;
+				//std::cout << "triangle vertex " << vertex.x << " " << vertex.y << " " << vertex.z << std::endl;
 			}
 
 			t->_id = _id;

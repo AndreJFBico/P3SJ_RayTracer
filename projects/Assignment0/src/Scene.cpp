@@ -41,7 +41,7 @@ void Scene::loadScene()
 
 			glm::vec3 finalColor = glm::vec3(0.0);
 
-			finalColor = trace(_geometry, _r, 0);
+			finalColor = trace(_geometry, _r, 0, false);
 
 			_pixels[_currentPixel].RGB.r = finalColor.r;
 			_pixels[_currentPixel].RGB.g = finalColor.g;
@@ -53,7 +53,7 @@ void Scene::loadScene()
 	
 }
 
-glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
+glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
 {
 
 	Geometry* nearest = NULL;
@@ -98,7 +98,6 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	glm::vec3 normal = nearest->calculateNormal(ray);
 	std::unordered_map<Ray*, int> _lightsofSF;
 
-
 	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
 	int j = 0;
 	for (light l : _lights){
@@ -106,7 +105,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 			Ray * r = new Ray();
 			const float ERR = 0.001f;
 			r->origin = closestintersect + normal * ERR;
-			r->direction = l.XYZ - r->origin;
+			r->direction = glm::normalize(l.XYZ - r->origin);
 			_shadowfillers.push_back(r);
 			_lightsofSF.emplace(r, j);
 
@@ -142,7 +141,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 		glm::vec3 diffuse = nearest->_RGB * nearest->_Kd * NdotL;
 
 		float specular = 0.0;
-
+		
 		if (NdotL > 0){
 			float NdotH = fmin(fmax(glm::dot(R, H), 0.0f), 1.0f);
 			float Blinn = pow(NdotH, nearest->_Shine / 8);
@@ -169,7 +168,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	if (nearest->_Ks > 0){
 		glm::vec3 rColor;
 		Ray* rRay = ray->reflect(normal);
-		rColor = trace(geometry, rRay, depth + 1);
+		rColor = trace(geometry, rRay, depth + 1, false);
 		lightComp = rColor* nearest->_Ks + lightComp;
 	}
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -178,7 +177,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth)
 	if (nearest->_T > 0){
 		glm::vec3 tColor;
 		Ray * tRay = ray->refract(normal, nearest->_refract_index);
-		tColor = trace(geometry, tRay, depth + 1);
+		tColor = trace(geometry, tRay, depth + 1, true);
 		lightComp = tColor* nearest->_T + lightComp;
 	}
 
