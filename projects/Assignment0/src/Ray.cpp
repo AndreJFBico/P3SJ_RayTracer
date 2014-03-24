@@ -42,7 +42,7 @@ void Ray::trace()
 Ray* Ray::reflect(glm::vec3 normal)
 {
 	Ray* rRay = new Ray();
-	const float ERR = 0.001f;
+	const float ERR = 0.003f;
 	rRay->direction = direction - 2.0f * (normal*(glm::dot(normal, direction)));
 	rRay->direction = glm::normalize(rRay->direction);
 	rRay->origin = intersectPoint + rRay->direction *ERR;
@@ -53,24 +53,16 @@ Ray* Ray::reflect(glm::vec3 normal)
 Ray* Ray::refract(glm::vec3 normal, float refract)
 {
 	Ray* rRay = new Ray();
-	/*float etaRatio = refractionIndex / refract;
-	float cosI = glm::dot(-direction, normal);
-	float cosT2 = 1.0f - etaRatio * etaRatio * (1.0f - cosI * cosI);
-	glm::vec3 T = glm::vec3(0.0, 0.0, 0.0); 
-	if (cosT2 > 0.0)
-	T = etaRatio * direction + ((etaRatio * cosI - sqrt(cosT2))) * normal;
-	rRay->direction = T * cosT2;
-	const float ERR = 0.001f;
-	rRay->origin = intersectPoint + normal *ERR;;*/
+
 	glm::vec3 vT = (glm::dot(-direction, normal))*normal - (-direction);
 	float senThetaI = glm::length(vT);
-	float senThetaT = (refractionIndex / 1.51f) * senThetaI;
+	float senThetaT = (refractionIndex / refract) * senThetaI;
 	float cosThetaT = 0.0;
 	if (senThetaT*senThetaT < 1.0f)
 		cosThetaT = sqrt(1 - (senThetaT*senThetaT));
 	glm::vec3 t = glm::normalize(vT);
 
-	const float ERR = 0.001f;
+	const float ERR = 0.003f;
 	rRay->direction = senThetaT * t + cosThetaT * (-normal);
 	rRay->direction = glm::normalize(rRay->direction);
 	rRay->origin = intersectPoint + (rRay->direction) *ERR;

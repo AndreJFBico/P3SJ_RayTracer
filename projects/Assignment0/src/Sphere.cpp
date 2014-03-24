@@ -19,7 +19,7 @@ bool Sphere::intersect(Ray *r)
 	//float disc = (b*b) - (4.0f*a*c);
 	float disc = (b*b) - (4.0f*a*c), t;
 
-	if (disc < 0) //If discriminant is negative no intersection happens
+	if (disc < 0.0) //If discriminant is negative no intersection happens
 	{
 		return false;
 	}
@@ -34,22 +34,20 @@ bool Sphere::intersect(Ray *r)
 			q = -0.5 * (b + sqrt(disc));
 		else q = -0.5 * (b - sqrt(disc));
 
-		t0 = q / a;
-		t1 = c / q;
+		t1 = q / a;
+		t0 = c / q;
 
-		if (t0 > t1)
-		{
-			float tmp = t0;
-			t0 = t1;
-			t1 = tmp;
-		}
+		//t0 = (-b - sqrt(disc)) / 2 * a;
+		//t1 = (-b + sqrt(disc)) / 2 * a;
 
-		if (t1 < 0 )
+		if (t1 < 0)
 			return false;
-		t = t0;
-		//origin of the ray is inside
+		
 		if (t0 < 0 && t1 > 0)
-			return false;
+		{
+			t = t1;
+		}
+		else t = t0;
 
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);

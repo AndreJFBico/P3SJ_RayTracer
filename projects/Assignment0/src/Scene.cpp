@@ -10,7 +10,7 @@ Scene::Scene()
 	_dpi = 72;
 	_width = 512;
 	_height = 512;
-	_maxDepth = 3;
+	_maxDepth = 4;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -61,7 +61,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	float prevD2Obj = INT_MAX;
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
 	ray->dToObject = 0;
-			
+
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DE INTERSECÇÃO +++++++++++++++
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -104,7 +104,9 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		if (glm::dot(normal, l.XYZ - closestintersect) > 0){
 			Ray * r = new Ray();
 			const float ERR = 0.001f;
-			r->origin = closestintersect + normal * ERR;
+			if (refracted)
+				r->origin = closestintersect - normal * ERR;
+			else r->origin = closestintersect + normal * ERR;
 			r->direction = glm::normalize(l.XYZ - r->origin);
 			_shadowfillers.push_back(r);
 			_lightsofSF.emplace(r, j);
@@ -119,7 +121,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		j++;
 	}
 
-	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.000001f);
+	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 	glm::vec3 lightComp = glm::vec3(0.0);
 	int i = 0;
 	for (Ray* sf : _shadowfillers){
@@ -149,14 +151,14 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		}
 
 		if (sf->shadowfillertype){
-			lightComp.r = (diffuse.r + specular / 2) * attenuation * luz.RGB.r + lightComp.r;
-			lightComp.g = (diffuse.g + specular / 2) * attenuation * luz.RGB.g + lightComp.g;
-			lightComp.b = (diffuse.b + specular / 2) * attenuation * luz.RGB.b + lightComp.b;
+				lightComp.r = (diffuse.r + specular / 2) * attenuation * luz.RGB.r + lightComp.r;
+				lightComp.g = (diffuse.g + specular / 2) * attenuation * luz.RGB.g + lightComp.g;
+				lightComp.b = (diffuse.b + specular / 2) * attenuation * luz.RGB.b + lightComp.b;
 		}
 		else{
-			lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
-			lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
-			lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.05f, 0.0);
+				lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+				lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+				lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
 		}
 	}
 
@@ -165,20 +167,42 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DA COR DO RAIO REFLECTIDO +++++++++++++++
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	
 	if (nearest->_Ks > 0){
 		glm::vec3 rColor;
-		Ray* rRay = ray->reflect(normal);
-		rColor = trace(geometry, rRay, depth + 1, false);
-		lightComp = rColor* nearest->_Ks + lightComp;
+		Ray* rRay;
+		if (refracted)
+		{
+			rRay = ray->reflect(-normal);
+			rColor = trace(geometry, rRay, depth + 1, refracted);
+			lightComp = rColor* nearest->_Ks/2.0f + lightComp;
+		}
+		else
+		{
+			rRay = ray->reflect(normal);
+			rColor = trace(geometry, rRay, depth + 1, refracted);
+			lightComp = rColor* nearest->_Ks + lightComp;
+		}	
 	}
+
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//++++++++++++++ CALCULO DA COR DO RAIO REFRACTADO +++++++++++++++
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 	if (nearest->_T > 0){
 		glm::vec3 tColor;
-		Ray * tRay = ray->refract(normal, nearest->_refract_index);
-		tColor = trace(geometry, tRay, depth + 1, true);
-		lightComp = tColor* nearest->_T + lightComp;
+		Ray * tRay;
+		if (refracted)
+		{
+			tRay = ray->refract(-normal, 1.0f);
+			tColor = trace(geometry, tRay, depth + 1, false);
+		}
+		else {
+			tRay = ray->refract(normal, nearest->_refract_index);
+			tColor = trace(geometry, tRay, depth + 1, true);
+		}
+		
+		lightComp = tColor* nearest->_T/1.1f + lightComp;
 	}
 
 	//Clamp
