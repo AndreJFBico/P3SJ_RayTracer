@@ -184,6 +184,28 @@ void NFFLoader::load(std::string fpath)
 			_id += 0.1;
 			_geometry.push_back(t);
 		}
+		else
+		if (line.substr(0, 3) == "bb ")
+		{
+			std::istringstream s(line.substr(3));
+			glm::vec3 min, max;
+			BoundingBox * b = new BoundingBox();
+			glm::vec3 vertex;
+			b->_RGB = RGB;
+			b->_Kd = Kd;
+			b->_Ks = Ks;
+			b->_Shine = Shine;
+			b->_T = T;
+			b->_refract_index = refract_index;
+			s >> min.x, s >> min.y, s >> min.z , s >> max.x, s >> max.y, s >> max.z;
+			b->min = min;
+			b->max = max;
+			std::cout << "bounding box: " << min.x << " " << min.y << " "<< min.z << " " << max.x << " " << max.y << " " << max.z << std::endl;
+
+			b->_id = _id;
+			_id += 0.1;
+			_geometry.push_back(b);
+		}
 	}
 }
 

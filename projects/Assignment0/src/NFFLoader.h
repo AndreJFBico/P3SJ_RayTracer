@@ -5,6 +5,7 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Triangle.h"
+#include "BoundingBox.h"
 
 class NFFLoader
 {

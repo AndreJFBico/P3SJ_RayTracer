@@ -84,6 +84,9 @@
     <ClCompile Include="..\src\Triangle.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BoundingBox.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\fragment_shader.glsl">
@@ -181,6 +184,9 @@
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Triangle.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BoundingBox.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
   </ItemGroup>

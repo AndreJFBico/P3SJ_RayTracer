@@ -130,7 +130,10 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 					
 		glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
 
-		glm::vec3 E = glm::normalize(ray->origin - closestintersect);
+		glm::vec3 dE = ray->origin - closestintersect, E;
+		if (dE == glm::vec3(0.0, 0.0, 0.0))
+			E = dE;
+		else E = glm::normalize(ray->origin - closestintersect);
 		glm::vec3 H = glm::normalize(L + E);
 
 		//glm::vec3 u = closestintersect - _c->_from;
