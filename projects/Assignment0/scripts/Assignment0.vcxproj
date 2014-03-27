@@ -24,39 +24,6 @@
     <ClCompile Include="..\src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\CubeM_fragment_shader.glsl" />
-    <None Include="..\shaders\CubeM_vertex_shader.glsl" />
-    <None Include="..\shaders\fragment_shader.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\shaders\fragment_shader_bump.glsl" />
-    <None Include="..\shaders\skybox_frag_shader.glsl" />
-    <None Include="..\shaders\skybox_vertex_shader.glsl" />
-    <None Include="..\shaders\SphereM_fragment_shader.glsl" />
-    <None Include="..\shaders\SphereM_vertex_shader.glsl" />
-    <None Include="..\shaders\vertex_shader.glsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\shaders\vertex_shader_bump.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\textures\fire.tga" />
-    <Image Include="..\textures\negx.jpg" />
-    <Image Include="..\textures\negy.jpg" />
-    <Image Include="..\textures\negz.jpg" />
-    <Image Include="..\textures\posx.jpg" />
-    <Image Include="..\textures\posy.jpg" />
-    <Image Include="..\textures\posz.jpg" />
-    <Image Include="..\textures\stone.tga" />
-    <Image Include="..\textures\stone2.tga" />
-    <Image Include="..\textures\stone2_normal.tga" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\objects\sphere.obj">
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.h" />
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Geometry.h" />
@@ -68,6 +35,15 @@
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Triangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\nff\balls_low.nff" />
+    <None Include="..\nff\boundingbox.nff" />
+    <None Include="..\nff\boundingbox_refract.nff" />
+    <None Include="..\nff\jap.nff" />
+    <None Include="..\nff\mount_high.nff" />
+    <None Include="..\nff\mount_low.nff" />
+    <None Include="..\nff\mount_very_high.nff" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{317E3F7B-6CC8-4DF0-AE91-8F0D67B7DDF7}</ProjectGuid>
