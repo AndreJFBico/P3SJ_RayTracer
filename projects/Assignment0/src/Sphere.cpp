@@ -33,21 +33,20 @@ bool Sphere::intersect(Ray *r)
 		if (b > 0)
 			q = -0.5 * (b + sqrt(disc));
 		else q = -0.5 * (b - sqrt(disc));
-
-		t1 = q / a;
-		t0 = c / q;
-
-		//t0 = (-b - sqrt(disc)) / 2 * a;
-		//t1 = (-b + sqrt(disc)) / 2 * a;
-
-		if (t1 < 0)
-			return false;
 		
-		if (t0 < 0 && t1 > 0)
+		if (c < 0)
 		{
-			t = t1;
+			t = q / a;
 		}
-		else t = t0;
+		else {
+			t1 = q / a;
+			t0 = c / q;
+
+			if (t1 < 0)
+				return false;
+
+			t = t0;
+		}
 
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
