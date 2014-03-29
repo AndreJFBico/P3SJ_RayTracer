@@ -160,7 +160,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	return res;
 };
 
-glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
+glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& ray, Geometry*& nearest)
 {
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
 	float prevD2Obj = INT_MAX;
