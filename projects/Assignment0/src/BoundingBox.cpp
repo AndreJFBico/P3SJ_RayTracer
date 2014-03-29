@@ -56,7 +56,7 @@ bool BoundingBox::intersect(Ray *r)
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 
-	const float ERR = 0.00001;
+	const float ERR = 0.00001f;
 
 	glm::vec3 center = min + ((max-min)  / 2.0f);
 	if (r->intersectPoint.x > min.x - ERR && r->intersectPoint.x < min.x + ERR)

@@ -132,7 +132,7 @@ void NFFLoader::load(std::string fpath)
 			//std::cout << "plane v1 " << ver1.x << " " << ver1.y << " " << ver1.z << std::endl;
 			//std::cout << "plane v2 " << ver2.x << " " << ver2.y << " " << ver2.z << std::endl;
 			p->_id = _id;
-			_id += 0.1;
+			_id += 0.1f;
 			_geometry.push_back(p);
 		}
 		else
@@ -153,7 +153,7 @@ void NFFLoader::load(std::string fpath)
 			//std::cout << "sphere " << S->_center.x << " " << S->_center.y << " " << S->_center.z << std::endl;
 			//std::cout << "sphere radius " << S->_radius << std::endl;
 			S->_id = _id;
-			_id += 0.1;
+			_id += 0.1f;
 			_geometry.push_back(S);
 		}
 		else
@@ -181,7 +181,7 @@ void NFFLoader::load(std::string fpath)
 			}
 
 			t->_id = _id;
-			_id += 0.1;
+			_id += 0.1f;
 			_geometry.push_back(t);
 		}
 		else
@@ -203,7 +203,7 @@ void NFFLoader::load(std::string fpath)
 			std::cout << "bounding box: " << min.x << " " << min.y << " "<< min.z << " " << max.x << " " << max.y << " " << max.z << std::endl;
 
 			b->_id = _id;
-			_id += 0.1;
+			_id += 0.1f;
 			_geometry.push_back(b);
 		}
 	}

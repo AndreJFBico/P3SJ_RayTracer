@@ -46,6 +46,12 @@
     <Filter Include="Resource Files\nff">
       <UniqueIdentifier>{f170766a-620f-4674-a586-fae6b1201cda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Twister">
+      <UniqueIdentifier>{6db5d6f7-a778-4334-b336-32384120f92d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Twister">
+      <UniqueIdentifier>{06390882-c876-4802-9119-136d5fcae91b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -81,6 +87,9 @@
     <ClCompile Include="..\src\BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\twister.cpp">
+      <Filter>Source Files\Twister</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Includes.h">
@@ -115,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\src\BoundingBox.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\twister.h">
+      <Filter>Header Files\Twister</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

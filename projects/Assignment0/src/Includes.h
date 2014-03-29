@@ -19,6 +19,11 @@
 
 const float  PI = 3.14159265358979f;
 
+const float A_L_X_SIZE = 0.6f;
+const float A_L_Y_SIZE = 0.6f;
+const glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
+
+#define NUM_SHADOW_RAYS 30
 #define CAPTION "P3SJ"
 
 struct pixel
@@ -33,4 +38,9 @@ struct light
 	/*-----*/
 	glm::vec3 RGB;
 	/*-----*/
+	glm::vec3 corner;
+	/*-----*/
+	glm::vec3 xdir;
+	/*-----*/
+	glm::vec3 ydir;
 };

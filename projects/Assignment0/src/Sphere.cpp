@@ -25,14 +25,14 @@ bool Sphere::intersect(Ray *r)
 	}
 	else if (disc == 0)
 	{
-		t0 = t1 = -0.5 * b / a;
+		t0 = t1 = -0.5f * b / a;
 	}
 	else
 	{
 		float q;
 		if (b > 0)
-			q = -0.5 * (b + sqrt(disc));
-		else q = -0.5 * (b - sqrt(disc));
+			q = -0.5f * (b + sqrt(disc));
+		else q = -0.5f * (b - sqrt(disc));
 		
 		if (c < 0)
 		{

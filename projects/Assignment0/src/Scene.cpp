@@ -11,6 +11,7 @@ Scene::Scene()
 	_width = 512;
 	_height = 512;
 	_maxDepth = 4;
+	_t = new Twister();
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -22,10 +23,22 @@ void Scene::loadNFF(std::string fpath)
 	_lights = NFFLoader::getInstance().getLight();
 	_c = NFFLoader::getInstance().getCamera();
 	_geometry = NFFLoader::getInstance().getGeometry();
+	genAreaLightPlanes();
+}
+
+void Scene::genAreaLightPlanes()
+{
+	for (unsigned int i = 0; i < _lights.size(); i++)
+	{
+		_lights[i].corner = _lights[i].XYZ - glm::vec3(A_L_X_SIZE, A_L_Y_SIZE, 0.0f);
+		_lights[i].xdir = glm::vec3(1.0f, 0.0f, 0.0f);
+		_lights[i].ydir = glm::vec3(0.0f, 1.0f, 0.0f);
+	}
 }
 
 void Scene::loadScene()
 {
+	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
 	
 	int n = _width*_height;
@@ -56,7 +69,7 @@ void Scene::loadScene()
 glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& ray, Geometry*& nearest)
 {
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
-	float prevD2Obj = INT_MAX;
+	float prevD2Obj = (float)INT_MAX;
 
 	for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
 	{
@@ -77,38 +90,161 @@ glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& 
 	return closestintersect;
 }
 
+void checkColisionOfShadowRays(std::vector<Geometry*> geometry, std::vector<Ray*>& shadowfillers)
+{
+	//See if it collides with any object in the scene
+	for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
+	{
+		for (std::vector<Ray*>::iterator it2 = shadowfillers.begin(); it2 != shadowfillers.end(); it2++)
+		{
+			if ((*it)->intersect(*it2))
+			{
+				(*it2)->shadowfillertype = false;
+			}
+		}
+	}
+}
+
 void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
-							std::unordered_map<Ray*, int>& lightsOfSF, std::vector<light> lights,
-							bool refracted, glm::vec3 closestintersect, std::vector<Geometry*> geometry)
+							std::vector<lightRays>* lightsOfSF, std::vector<light> lights,
+							bool refracted, glm::vec3 closestintersect, std::vector<Geometry*> geometry, Twister *t)
 {
 	int j = 0;
-	for (light l : lights){
-		if (glm::dot(normal, l.XYZ - closestintersect) > 0){
-			Ray * r = new Ray();
-			const float ERR = 0.001f;
-			if (refracted)
-				r->origin = closestintersect - normal * ERR;
-			else r->origin = closestintersect + normal * ERR;
-			r->direction = glm::normalize(l.XYZ - r->origin);
-			shadowfillers.push_back(r);
-			lightsOfSF.emplace(r, j);
+	for (light l : lights)
+	{ 
+		std::vector<rayPos> rays_pos;
+		bool behind_light = false;
+		/*Ray * r = new Ray();
+		const float ERR = 0.001f;
+		if (refracted)
+			r->origin = closestintersect - normal * ERR;
+		else r->origin = closestintersect + normal * ERR;
+		r->direction = glm::normalize(l.XYZ - r->origin);
+		shadowfillers.push_back(r);
+		rays_pos->push_back(rayPos(r, l.XYZ));*/
 
-			//See if it collides with any object in the scene
-			for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
+		const float ERR = 0.001f;
+		for (int i = 0; i < NUM_SHADOW_RAYS; i++)
+		{
+			Ray * r2 = new Ray();
+			if (refracted)
+				r2->origin = closestintersect - normal * ERR;
+			else r2->origin = closestintersect + normal * ERR;
+			//falta mudar a direction para random
+			glm::vec3 randomizedPoint;
+
+			if (i < NUM_SHADOW_RAYS / 4.0f)
 			{
-				if ((*it)->intersect(r))
-					r->shadowfillertype = false;
+				float du = t->Rand() * A_L_X_SIZE;
+				float dv = t->Rand() * A_L_Y_SIZE;
+				randomizedPoint = l.corner + du*l.xdir + dv*l.ydir;
 			}
+			else if (i < 2.0 *(NUM_SHADOW_RAYS / 4.0f))
+			{
+				float du = t->Rand() * A_L_X_SIZE;
+				float dv = t->Rand() * A_L_Y_SIZE;
+				randomizedPoint = l.XYZ + du*l.xdir + dv*l.ydir;
+			}
+			else if (i < 3.0 *(NUM_SHADOW_RAYS / 4.0f))
+			{
+				float du = t->Rand() * A_L_X_SIZE;
+				float dv = t->Rand() * A_L_Y_SIZE;
+				randomizedPoint = l.corner + l.xdir*A_L_X_SIZE + du*l.xdir + dv*l.ydir;
+			}
+			else if (i < NUM_SHADOW_RAYS)
+			{
+				float du = t->Rand() * A_L_X_SIZE;
+				float dv = t->Rand() * A_L_Y_SIZE;
+				randomizedPoint = l.corner + l.ydir*A_L_Y_SIZE + du*l.xdir + dv*l.ydir;
+			}
+			//float du = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f / NUM_SHADOW_RAYS)));
+			//float dv = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f / NUM_SHADOW_RAYS)));
+			//glm::vec3 randomizedPoint = l.XYZ;
+			
+			//glm::vec3 randomizedPoint = l.corner + glm::vec3((i % 4) * (2 * A_L_X_SIZE / NUM_SHADOW_RAYS), (i / 4) * (2 * A_L_Y_SIZE / NUM_SHADOW_RAYS), 0.0) + du*l.xdir + dv*l.ydir;
+			//glm::vec3 randomizedPoint = l.corner + l.xdir * std::cos(3.0f * du) * 3.0f + l.ydir * sin(3.0f * dv) * 3.0f;
+			r2->direction = glm::normalize(randomizedPoint - r2->origin);
+			if (glm::dot(normal, randomizedPoint - closestintersect) > 0)
+			{
+				shadowfillers.push_back(r2);
+				rays_pos.push_back(rayPos(r2, randomizedPoint));
+			}
+			else behind_light = true;
+		}
+		if (!rays_pos.empty())
+		{
+			lightsOfSF->push_back(lightRays(j, rays_pos));
+			checkColisionOfShadowRays(geometry, shadowfillers);
 		}
 		j++;
 	}
 }
 
 void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, glm::vec3 normal,
-						std::unordered_map<Ray*, int> lightsOfSF, std::vector<light> lights,
+						std::vector<lightRays>* lightsOfSF, std::vector<light> lights,
 						glm::vec3 closestintersect, Ray* ray, Geometry* nearest)
 {
-	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
+	
+	for (unsigned int i = 0; i < lights.size(); i++)
+	{
+		std::vector<rayPos> rays_pos;
+		for (std::vector<lightRays>::iterator it = lightsOfSF->begin(); it != lightsOfSF->end(); it++)
+		{
+			if (i == (*it).l)
+			{
+				rays_pos = (*it).rays;
+				light luz = lights[(*it).l];
+				glm::vec3 shadowFillerContrib = glm::vec3(0.0, 0.0, 0.0);
+
+				for (std::vector<rayPos>::iterator it = rays_pos.begin(); it != rays_pos.end(); it++)
+				{
+					float attenuation = 1.0f / (1.0f + LightAttenuation.x * glm::length(closestintersect - it->pos) + LightAttenuation.y * pow(glm::length(closestintersect - it->pos), 2));
+					glm::vec3 L = glm::normalize(it->pos - closestintersect);
+
+					glm::vec3 dE = ray->origin - closestintersect, E;
+					if (dE == glm::vec3(0.0, 0.0, 0.0))
+						E = dE;
+					else E = glm::normalize(ray->origin - closestintersect);
+					glm::vec3 H = glm::normalize(L + E);
+
+					//glm::vec3 u = closestintersect - _c->_from;
+					//float diffuse = nearest->_Kd * glm::dot(normal, u);
+					glm::vec3 R = (-L) - (2.0f * normal*(glm::dot(normal, (-L))));
+					//glm::vec3 H = glm::normalize(closestintersect - luz.XYZ + u);
+
+					float NdotL = fmin(fmax(glm::dot(normal, L), 0.0f), 1.0f);
+
+					glm::vec3 diffuse = nearest->_RGB * nearest->_Kd * NdotL;
+
+					float specular = 0.0;
+
+					if (NdotL > 0){
+						float NdotH = fmin(fmax(glm::dot(R, H), 0.0f), 1.0f);
+						float Blinn = pow(NdotH, nearest->_Shine / 8);
+						specular = nearest->_Ks * Blinn;
+					}
+
+					if ((it->ray)->shadowfillertype)
+					{
+						shadowFillerContrib.r = (diffuse.r + specular / 2.0f) * attenuation * luz.RGB.r + shadowFillerContrib.r;
+						shadowFillerContrib.g = (diffuse.g + specular / 2.0f) * attenuation * luz.RGB.g + shadowFillerContrib.g;
+						shadowFillerContrib.b = (diffuse.b + specular / 2.0f) * attenuation * luz.RGB.b + shadowFillerContrib.b;
+					}
+					else{
+						shadowFillerContrib.r = fmax(shadowFillerContrib.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
+						shadowFillerContrib.g = fmax(shadowFillerContrib.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
+						shadowFillerContrib.b = fmax(shadowFillerContrib.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
+					}
+				}
+				shadowFillerContrib = (shadowFillerContrib / ((float)rays_pos.size()));
+				lightComp.r = shadowFillerContrib.r + lightComp.r;
+				lightComp.g = shadowFillerContrib.g + lightComp.g;
+				lightComp.b = shadowFillerContrib.b + lightComp.b;
+				break;
+			}	
+		}
+	}
+	/*glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 	int i = 0;
 	for (Ray* sf : shadowfillers){
 		light luz = lights[lightsOfSF.at(sf)];
@@ -149,7 +285,7 @@ void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, 
 			lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
 			lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
 		}
-	}
+	}*/
 }
 
 glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
@@ -174,13 +310,16 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 
 	std::vector<Ray*> _shadowfillers;
 	glm::vec3 normal = nearest->calculateNormal(ray);
-	std::unordered_map<Ray*, int> _lightsofSF;
+	std::vector<lightRays>* _lightsofSF = new std::vector<lightRays>;
 	glm::vec3 lightComp = glm::vec3(0.0);
 
 	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
-	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _geometry);
+	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _geometry, _t);
 
 	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
+
+	std::vector<Ray*>().swap(_shadowfillers);
+	std::vector<lightRays>().swap(*_lightsofSF);
 
 	if (depth >= _maxDepth) return lightComp;
 
@@ -229,7 +368,6 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	lightComp.r = fmin(fmax(lightComp.r, 0.0f), 1.0f);
 	lightComp.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
-	
+	//delete(nearest);
 	return lightComp;
-	
 }

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "twister.h"
 #include "includes.h"
 #include "Camera.h"
 #include "NFFLoader.h"
 #include "OutConverter.h"
 #include "Ray.h"
+#include <thread>
 
 class Scene
 {
@@ -19,7 +21,6 @@ class Scene
 	//Vector with the number of lights read from the nff file.
 	//Struct light defined in Includes.h.
 	std::vector<light> _lights;
-	
 
 	//Camera that stores the folowing parameters:
 	/*	From: the eye location in XYZ.
@@ -33,6 +34,8 @@ class Scene
 	Camera *_c;
 	Ray *_r;
 	std::vector<Geometry*> _geometry;
+
+	Twister *_t;
 
 	//structure to store all the pixels after the rendering
 	pixel *_pixels;
@@ -49,6 +52,8 @@ public:
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 
+	void genAreaLightPlanes();
+
 	pixel* getPixels(){ return _pixels; };
 
 	int getWidth(){ return _width; }
@@ -56,4 +61,22 @@ public:
 	int getHeight() { return _height; }
 
 	int getDpi(){ return _dpi; }
+};
+
+struct rayPos
+{
+	Ray* ray;
+	/*-----*/ 
+	glm::vec3 pos;
+	/*-----*/
+	rayPos(Ray * r, glm::vec3 p) : ray(r), pos(p){}
+};
+
+struct lightRays
+{
+	int l;
+	/*-----*/
+	std::vector<rayPos> rays;
+	/*-----*/
+	lightRays(int i, std::vector<rayPos> r) : l(i), rays(r){}
 };

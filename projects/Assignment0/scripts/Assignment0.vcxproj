@@ -22,6 +22,7 @@
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\Sphere.cpp" />
     <ClCompile Include="..\src\Triangle.cpp" />
+    <ClCompile Include="..\src\twister.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Triangle.h" />
+    <ClInclude Include="..\src\twister.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\nff\balls_low.nff" />
