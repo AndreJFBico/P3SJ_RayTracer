@@ -36,6 +36,15 @@
     <ClInclude Include="..\src\Sphere.h" />
     <ClInclude Include="..\src\Triangle.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\nff\balls_low.nff" />
+    <None Include="..\nff\boundingbox.nff" />
+    <None Include="..\nff\boundingbox_refract.nff" />
+    <None Include="..\nff\jap.nff" />
+    <None Include="..\nff\mount_high.nff" />
+    <None Include="..\nff\mount_low.nff" />
+    <None Include="..\nff\mount_very_high.nff" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{317E3F7B-6CC8-4DF0-AE91-8F0D67B7DDF7}</ProjectGuid>
     <RootNamespace>Assignment1</RootNamespace>
