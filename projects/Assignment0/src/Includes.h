@@ -20,6 +20,7 @@
 const float  PI = 3.14159265358979f;
 
 #define CAPTION "P3SJ"
+#define NUM_THREADS 4
 
 struct pixel
 {

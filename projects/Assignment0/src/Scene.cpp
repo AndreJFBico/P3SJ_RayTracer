@@ -6,7 +6,6 @@ Scene::Scene()
 	_backgroundColor = glm::vec3(0.0);
 	_lights = *(new std::vector<light>());
 	_c = NULL;
-	_r = new Ray();
 	_dpi = 72;
 	_width = 512;
 	_height = 512;
@@ -24,31 +23,66 @@ void Scene::loadNFF(std::string fpath)
 	_geometry = NFFLoader::getInstance().getGeometry();
 }
 
+void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY)
+{
+	Ray* ray = new Ray();
+	for (int y = initY; y < initY + endY; y++)
+	{
+		for (int x = initX; x < initX + endX; x++)
+		{
+			int currentpixel = y*_width + x;
+			ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+
+			glm::vec3 finalColor = glm::vec3(0.0);
+
+			finalColor = trace(_geometry, ray, 0, false);
+
+			_pixels[currentpixel].RGB.r = finalColor.r;
+			_pixels[currentpixel].RGB.g = finalColor.g;
+			_pixels[currentpixel].RGB.b = finalColor.b;
+
+		}
+	}
+}
+
 void Scene::loadScene()
 {
+	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
 	
 	int n = _width*_height;
 	_pixels = new pixel[n];
 	_RES.x = (float)_width;
 	_RES.y = (float)_height;
-	for (int y = 0; y < _RES.y; y++)
-	{
-		for (int x = 0; x < _RES.x; x++)
-		{
-			_currentPixel = y*_width + x;
-			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 
-			glm::vec3 finalColor = glm::vec3(0.0);
+	std::thread first([=](){partialSceneCalculation(0, 0, _RES.x / (NUM_THREADS/2), _RES.y /( NUM_THREADS/2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
+	
+	std::thread second([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS/2), _RES.y /( NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	
+	std::thread third([=](){partialSceneCalculation(0, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS/2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	
+	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y /2, _RES.x / (NUM_THREADS/2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
-			finalColor = trace(_geometry, _r, 0, false);
+	/** /
+	std::thread fifth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 
-			_pixels[_currentPixel].RGB.r = finalColor.r;
-			_pixels[_currentPixel].RGB.g = finalColor.g;
-			_pixels[_currentPixel].RGB.b = finalColor.b;
+	std::thread sixth([=](){partialSceneCalculation(_RES.x - _RES.x*3/4, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
-		}
-	}
+	std::thread seventh([=](){partialSceneCalculation(_RES.x - _RES.x * 3 / 4, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	std::thread eighth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	/**/
+
+	first.join();
+	second.join();
+	third.join();
+	forth.join();
+	/** /
+	fifth.join();
+	sixth.join();
+	seventh.join();
+	eighth.join();
+	/**/
 	std::cout << "ended rendering ..." << std::endl;
 	
 }
@@ -182,6 +216,10 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 
 	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
 
+	_shadowfillers.clear();
+	_lightsofSF.clear();
+
+	//if number of reflections and refractions are higher than the threshold returns local color
 	if (depth >= _maxDepth) return lightComp;
 
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -230,6 +268,8 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	lightComp.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
 	
+	delete nearest;
+
 	return lightComp;
 	
 }

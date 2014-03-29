@@ -5,6 +5,7 @@
 #include "NFFLoader.h"
 #include "OutConverter.h"
 #include "Ray.h"
+#include <thread>
 
 class Scene
 {
@@ -31,7 +32,6 @@ class Scene
 		Hither: distance of the hither plane (if any) from the eye. Mostly
 		needed for hidden surface algorithms.	*/
 	Camera *_c;
-	Ray *_r;
 	std::vector<Geometry*> _geometry;
 
 	//structure to store all the pixels after the rendering
@@ -43,6 +43,7 @@ public:
 
 	void loadNFF(std::string filename);
 
+	void partialSceneCalculation(int initX, int initY, float endX, float endY);
 	void loadScene();
 
 	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted);
