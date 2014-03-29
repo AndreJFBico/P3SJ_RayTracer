@@ -25,6 +25,7 @@ const glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 
 #define NUM_SHADOW_RAYS 30
 #define CAPTION "P3SJ"
+#define NUM_THREADS 4
 
 struct pixel
 {
