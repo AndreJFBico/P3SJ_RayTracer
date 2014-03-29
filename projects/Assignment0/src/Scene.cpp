@@ -11,6 +11,7 @@ Scene::Scene()
 	_width = 512;
 	_height = 512;
 	_maxDepth = 4;
+	_maxDiv = 4;
 }
 
 void Scene::loadNFF(std::string fpath)
@@ -27,21 +28,37 @@ void Scene::loadNFF(std::string fpath)
 void Scene::loadScene()
 {
 	std::cout << "rendering ..." << std::endl;
-	
+
 	int n = _width*_height;
+	int e = 1;
 	_pixels = new pixel[n];
 	_RES.x = (float)_width;
 	_RES.y = (float)_height;
-	for (int y = 0; y < _RES.y; y++)
+
+	glm::vec3 _colors[4]; //array para guardar as cores de cada canto do pixel
+
+	for (int y = 0; y < _RES.y ; y++)
 	{
-		for (int x = 0; x < _RES.x; x++)
+		for (int x = 0; x < _RES.x ; x++)
 		{
+			
 			_currentPixel = y*_width + x;
-			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+
+			//divide pixel em 4
+			_r->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+			_colors[0] = trace(_geometry, _r, 0, false);
+
+			_r->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
+			_colors[1] = trace(_geometry, _r, 0, false);
+
+			_r->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
+			_colors[2] = trace(_geometry, _r, 0, false);
+
+			_r->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
+			_colors[3] = trace(_geometry, _r, 0, false);
 
 			glm::vec3 finalColor = glm::vec3(0.0);
-
-			finalColor = trace(_geometry, _r, 0, false);
+			finalColor = monteCarloSampling(x, y, _colors, 0, e);
 
 			_pixels[_currentPixel].RGB.r = finalColor.r;
 			_pixels[_currentPixel].RGB.g = finalColor.g;
@@ -50,8 +67,98 @@ void Scene::loadScene()
 		}
 	}
 	std::cout << "ended rendering ..." << std::endl;
-	
 }
+
+glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int epsilon){
+
+	float threshold = 2.7f;
+	int e = epsilon / 2;
+	glm::vec3 vecAux[4], vecAux1[4], vecAux2[4], vecAux3[4];
+
+	glm::vec3 traceColor = glm::vec3(0.0);
+
+	glm::vec3 res = glm::vec3(0.0);
+	bool similar = true;
+
+	if (iter >= 4){
+		res.r = (c[0].r + c[1].r + c[2].r + c[3].r) / 4;
+		res.g = (c[0].g + c[1].g + c[2].g + c[3].g) / 4;
+		res.b = (c[0].b + c[1].b + c[2].b + c[3].b) / 4;
+		return res;
+	}
+
+	//verificacao se sao semelhantes
+	for (int i = 0, k = 1; i < 4; i++, k++){
+
+		if (i = 3) k = 0;
+
+		float diff = abs(c[i].r - c[k].r) + abs(c[i].g - c[k].g) + abs(c[i].b - c[k].b);
+
+		if (diff > threshold){ // cores diferentes
+			similar = false;
+			break;
+		}
+
+	}
+
+	if (similar){ //semelhantes => avg das cores
+		res.r = (c[0].r + c[1].r + c[2].r + c[3].r) / 4;
+		res.g = (c[0].g + c[1].g + c[2].g + c[3].g) / 4;
+		res.b = (c[0].b + c[1].b + c[2].b + c[3].b) / 4;
+	}
+	else{ //diferentes => subdivisao em 5 (vecAux = quadrante inf esquerdo do pixel)
+		vecAux[0] = c[0];
+		vecAux1[1] = c[1];
+		vecAux2[2] = c[2];
+		vecAux3[3] = c[3];
+
+		_r->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		traceColor = trace(_geometry, _r, 0, false);
+		vecAux[1] = traceColor;
+		vecAux1[0] = traceColor;
+
+		_r->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		traceColor = trace(_geometry, _r, 0, false);
+		vecAux[2] = traceColor;
+		vecAux1[3] = traceColor;
+		vecAux2[0] = traceColor;
+		vecAux3[1] = traceColor;
+
+		_r->calculateWCS(glm::vec2(x , y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		traceColor = trace(_geometry, _r, 0, false);
+		vecAux[3] = traceColor;
+		vecAux3[0] = traceColor;
+
+		_r->calculateWCS(glm::vec2(x + epsilon, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		traceColor = trace(_geometry, _r, 0, false);
+		vecAux1[2] = traceColor;
+		vecAux2[1] = traceColor;
+
+		_r->calculateWCS(glm::vec2(x + e, y + epsilon), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		traceColor = trace(_geometry, _r, 0, false);
+		vecAux2[3] = traceColor;
+		vecAux3[2] = traceColor;
+
+		glm::vec3 cor1 = glm::vec3(0.0);
+		cor1 = monteCarloSampling(x, y, vecAux, iter + 1, e);
+
+		glm::vec3 cor2 = glm::vec3(0.0);
+		cor2 = monteCarloSampling(x + e, y, vecAux1, iter + 1, e);
+
+		glm::vec3 cor3 = glm::vec3(0.0);
+		cor3 = monteCarloSampling(x + e, y + e, vecAux2, iter + 1, e);
+
+		glm::vec3 cor4 = glm::vec3(0.0);
+		cor3 = monteCarloSampling(x, y + e, vecAux3, iter + 1, e);
+
+		res.r = (cor1.r + cor2.r + cor3.r + cor4.r) / 4;
+		res.g = (cor1.g + cor2.g + cor3.g + cor4.g) / 4;
+		res.b = (cor1.b + cor2.b + cor3.b + cor4.b) / 4;
+
+	}
+	
+	return res;
+};
 
 glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
 {

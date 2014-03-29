@@ -36,7 +36,7 @@ class Scene
 
 	//structure to store all the pixels after the rendering
 	pixel *_pixels;
-	int _maxDepth;
+	int _maxDepth, _maxDiv;
 
 public:
 	Scene();
@@ -47,6 +47,8 @@ public:
 
 	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted);
 
+	glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* colors, int iter, int epsilon);
+
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 
 	pixel* getPixels(){ return _pixels; };
@@ -56,4 +58,5 @@ public:
 	int getHeight() { return _height; }
 
 	int getDpi(){ return _dpi; }
+
 };
