@@ -53,22 +53,12 @@ void Scene::loadScene()
 	
 }
 
-glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
+glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& ray, Geometry*& nearest)
 {
-
-	Geometry* nearest = NULL;
-	float closest = 0;
-	float prevD2Obj = INT_MAX;
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
-	ray->dToObject = 0;
+	float prevD2Obj = INT_MAX;
 
-	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//++++++++++++++ CALCULO DE INTERSECÇÃO +++++++++++++++
-	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-	//checks if primary ray intersects with any object
-	for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
+	for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
 	{
 		if ((*it)->intersect(ray))
 		{
@@ -77,7 +67,6 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 			{
 				closestintersect = ray->intersectPoint;
 				nearest = (*it);
-				closest = (*it)->_id;
 				prevD2Obj = ray->dToObject;
 			}
 		}
@@ -85,22 +74,15 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	ray->intersectPoint = closestintersect;
 	ray->dToObject = prevD2Obj;
 
-	//if there was an intersection calculates shadowfillers
-	if (nearest == NULL)
-		return _backgroundColor;
+	return closestintersect;
+}
 
-	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//++++++++++++++ CALCULO DA COR LOCAL +++++++++++++++++
-	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-	//vector to store all shadowfillers
-	std::vector<Ray*> _shadowfillers;
-	glm::vec3 normal = nearest->calculateNormal(ray);
-	std::unordered_map<Ray*, int> _lightsofSF;
-
-	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
+void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
+							std::unordered_map<Ray*, int>& lightsOfSF, std::vector<light> lights,
+							bool refracted, glm::vec3 closestintersect, std::vector<Geometry*> geometry)
+{
 	int j = 0;
-	for (light l : _lights){
+	for (light l : lights){
 		if (glm::dot(normal, l.XYZ - closestintersect) > 0){
 			Ray * r = new Ray();
 			const float ERR = 0.001f;
@@ -108,11 +90,11 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 				r->origin = closestintersect - normal * ERR;
 			else r->origin = closestintersect + normal * ERR;
 			r->direction = glm::normalize(l.XYZ - r->origin);
-			_shadowfillers.push_back(r);
-			_lightsofSF.emplace(r, j);
+			shadowfillers.push_back(r);
+			lightsOfSF.emplace(r, j);
 
 			//See if it collides with any object in the scene
-			for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
+			for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
 			{
 				if ((*it)->intersect(r))
 					r->shadowfillertype = false;
@@ -120,14 +102,18 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		}
 		j++;
 	}
+}
 
+void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, glm::vec3 normal,
+						std::unordered_map<Ray*, int> lightsOfSF, std::vector<light> lights,
+						glm::vec3 closestintersect, Ray* ray, Geometry* nearest)
+{
 	glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
-	glm::vec3 lightComp = glm::vec3(0.0);
 	int i = 0;
-	for (Ray* sf : _shadowfillers){
-		light luz = _lights[_lightsofSF.at(sf)];
+	for (Ray* sf : shadowfillers){
+		light luz = lights[lightsOfSF.at(sf)];
 		float attenuation = 1 / (1.0 + LightAttenuation.x * glm::length(closestintersect - luz.XYZ) + LightAttenuation.y * pow(glm::length(closestintersect - luz.XYZ), 2));
-					
+
 		glm::vec3 L = glm::normalize(luz.XYZ - closestintersect);
 
 		glm::vec3 dE = ray->origin - closestintersect, E;
@@ -140,13 +126,13 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		//float diffuse = nearest->_Kd * glm::dot(normal, u);
 		glm::vec3 R = (-L) - (2.0f * normal*(glm::dot(normal, (-L))));
 		//glm::vec3 H = glm::normalize(closestintersect - luz.XYZ + u);
-					
+
 		float NdotL = fmin(fmax(glm::dot(normal, L), 0.0f), 1.0f);
 
 		glm::vec3 diffuse = nearest->_RGB * nearest->_Kd * NdotL;
 
 		float specular = 0.0;
-		
+
 		if (NdotL > 0){
 			float NdotH = fmin(fmax(glm::dot(R, H), 0.0f), 1.0f);
 			float Blinn = pow(NdotH, nearest->_Shine / 8);
@@ -154,16 +140,47 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		}
 
 		if (sf->shadowfillertype){
-				lightComp.r = (diffuse.r + specular / 2) * attenuation * luz.RGB.r + lightComp.r;
-				lightComp.g = (diffuse.g + specular / 2) * attenuation * luz.RGB.g + lightComp.g;
-				lightComp.b = (diffuse.b + specular / 2) * attenuation * luz.RGB.b + lightComp.b;
+			lightComp.r = (diffuse.r + specular / 2) * attenuation * luz.RGB.r + lightComp.r;
+			lightComp.g = (diffuse.g + specular / 2) * attenuation * luz.RGB.g + lightComp.g;
+			lightComp.b = (diffuse.b + specular / 2) * attenuation * luz.RGB.b + lightComp.b;
 		}
 		else{
-				lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
-				lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
-				lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+			lightComp.r = fmax(lightComp.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+			lightComp.g = fmax(lightComp.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
+			lightComp.b = fmax(lightComp.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0);
 		}
 	}
+}
+
+glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
+{
+	Geometry* nearest = NULL;
+	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
+	ray->dToObject = 0;
+
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+	//++++++++++++++ CALCULO DE INTERSECÇÃO +++++++++++++++
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	closestintersect = calculateRayObjectIntersection(_geometry, ray, nearest);
+
+	//if there was an intersection calculates shadowfillers
+	if (nearest == NULL)
+		return _backgroundColor;
+
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+	//++++++++++++++ CALCULO DA COR LOCAL +++++++++++++++++
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	std::vector<Ray*> _shadowfillers;
+	glm::vec3 normal = nearest->calculateNormal(ray);
+	std::unordered_map<Ray*, int> _lightsofSF;
+	glm::vec3 lightComp = glm::vec3(0.0);
+
+	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
+	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _geometry);
+
+	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
 
 	if (depth >= _maxDepth) return lightComp;
 

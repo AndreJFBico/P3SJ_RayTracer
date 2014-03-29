@@ -13,15 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\objects">
-      <UniqueIdentifier>{aa9e036b-8fe8-4505-8409-b4b65526aa23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\textures">
-      <UniqueIdentifier>{c822d2f6-7cc9-4e78-8fe6-11c9ee423ad4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{fb394e76-cd1a-4543-8ba1-0e17ee568f64}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Camera">
       <UniqueIdentifier>{fb564bbf-7dcd-4e49-8149-143fdb7e9255}</UniqueIdentifier>
     </Filter>
@@ -51,6 +42,9 @@
     </Filter>
     <Filter Include="Header Files\OutConverter">
       <UniqueIdentifier>{4ad7112e-4afc-4a61-8961-18bd2e7df1a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\nff">
+      <UniqueIdentifier>{f170766a-620f-4674-a586-fae6b1201cda}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,75 +79,8 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BoundingBox.cpp">
-      <Filter>Source Files\Geometry</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shaders\fragment_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\vertex_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\SphereM_vertex_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\SphereM_fragment_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\CubeM_fragment_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\CubeM_vertex_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\objects\sphere.obj">
-      <Filter>Resource Files\objects</Filter>
-    </None>
-    <None Include="..\shaders\skybox_frag_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\skybox_vertex_shader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\fragment_shader_bump.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="..\shaders\vertex_shader_bump.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\textures\stone.tga">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\fire.tga">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\negx.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\negy.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\negz.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\posx.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\posy.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\posz.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\stone2.tga">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="..\textures\stone2_normal.tga">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Includes.h">
@@ -187,7 +114,30 @@
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\src\BoundingBox.h">
-      <Filter>Header Files\Geometry</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\nff\balls_low.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\boundingbox.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\boundingbox_refract.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\jap.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\mount_high.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\mount_low.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
+    <None Include="..\nff\mount_very_high.nff">
+      <Filter>Resource Files\nff</Filter>
+    </None>
   </ItemGroup>
 </Project>
