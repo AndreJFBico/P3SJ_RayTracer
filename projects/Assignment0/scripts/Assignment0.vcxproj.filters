@@ -79,7 +79,7 @@
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BoundingBox.cpp">
-      <Filter>Source Files\Geometry</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +114,7 @@
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="..\src\BoundingBox.h">
-      <Filter>Header Files\Geometry</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
