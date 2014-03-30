@@ -120,7 +120,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	
 	Ray* _r = new Ray();
 
-	float threshold = 2.7f;
+	float threshold = 2.9f;
 	int e = epsilon / 2;
 	glm::vec3 vecAux[4], vecAux1[4], vecAux2[4], vecAux3[4];
 
@@ -276,29 +276,26 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 			else r2->origin = closestintersect + normal * ERR;
 			//falta mudar a direction para random
 			glm::vec3 randomizedPoint;
-
+			float du = t->Rand() * A_L_X_SIZE;
+			float dv = t->Rand() * A_L_Y_SIZE;
 			if (i < NUM_SHADOW_RAYS / 4.0f)
 			{
-				float du = t->Rand() * A_L_X_SIZE;
-				float dv = t->Rand() * A_L_Y_SIZE;
+				
 				randomizedPoint = l.corner + du*l.xdir + dv*l.ydir;
 			}
 			else if (i < 2.0 *(NUM_SHADOW_RAYS / 4.0f))
 			{
-				float du = t->Rand() * A_L_X_SIZE;
-				float dv = t->Rand() * A_L_Y_SIZE;
+				
 				randomizedPoint = l.XYZ + du*l.xdir + dv*l.ydir;
 			}
 			else if (i < 3.0 *(NUM_SHADOW_RAYS / 4.0f))
 			{
-				float du = t->Rand() * A_L_X_SIZE;
-				float dv = t->Rand() * A_L_Y_SIZE;
+				
 				randomizedPoint = l.corner + l.xdir*A_L_X_SIZE + du*l.xdir + dv*l.ydir;
 			}
 			else if (i < NUM_SHADOW_RAYS)
 			{
-				float du = t->Rand() * A_L_X_SIZE;
-				float dv = t->Rand() * A_L_Y_SIZE;
+				
 				randomizedPoint = l.corner + l.ydir*A_L_Y_SIZE + du*l.xdir + dv*l.ydir;
 			}
 			//float du = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f / NUM_SHADOW_RAYS)));
@@ -462,7 +459,16 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 
 	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
 
+	for (std::vector<Ray*>::iterator it = _shadowfillers.begin(); it != _shadowfillers.end(); it++)
+	{
+		delete(*it);
+	}
 	std::vector<Ray*>().swap(_shadowfillers);
+
+	for (std::vector<lightRays>::iterator it = _lightsofSF->begin(); it != _lightsofSF->end(); it++)
+	{
+		std::vector<rayPos>().swap(it->rays);
+	}
 	std::vector<lightRays>().swap(*_lightsofSF);
 
 	if (depth >= _maxDepth) return lightComp;
