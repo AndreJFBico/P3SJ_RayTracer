@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Twister">
       <UniqueIdentifier>{06390882-c876-4802-9119-136d5fcae91b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PieceReader">
+      <UniqueIdentifier>{84ec4033-e8a3-4204-9aab-0a021ceb7e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PieceReader">
+      <UniqueIdentifier>{d13549f8-19d7-46f5-9aba-21987a146a1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -84,11 +90,17 @@
     <ClCompile Include="..\src\Triangle.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\BoundingBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\twister.cpp">
       <Filter>Source Files\Twister</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Vertex.cpp">
+      <Filter>Source Files\PieceReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BoundingBox.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PieceReader.cpp">
+      <Filter>Source Files\PieceReader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,11 +134,17 @@
     <ClInclude Include="..\src\Triangle.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\BoundingBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\twister.h">
       <Filter>Header Files\Twister</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Vertex.h">
+      <Filter>Header Files\PieceReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BoundingBox.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PieceReader.h">
+      <Filter>Header Files\PieceReader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

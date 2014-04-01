@@ -33,7 +33,6 @@ void reshape(int w, int h)
 void drawScene()
 {
 	int n = RES_X * RES_Y;
-
 	pixel* pixels = scene->getPixels();
 	for (int i = 0; i < n; i++){
 		glBegin(GL_POINTS);
@@ -42,18 +41,11 @@ void drawScene()
 		glEnd();
 	}
 	glFlush();
-	printf("Terminou!\n");
+	glutPostRedisplay();
 }
 
-int main(int argc, char**argv)
+int glutInitv(int argc, char**argv)
 {
-	scene = new Scene();
-	scene->loadNFF("..\\nff\\balls_medium.nff");
-	scene->loadScene();
-
-	RES_X = scene->getWidth();
-	RES_Y = scene->getHeight();
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
 
@@ -69,4 +61,24 @@ int main(int argc, char**argv)
 
 	glutMainLoop();
 	return 0;
+}
+
+void loadScene(Scene *s)
+{
+	scene->loadNFF("..\\nff\\jap.nff");
+	scene->loadObj("..\\objs\\dragon_0.obj");
+	scene->loadScene();
+}
+
+int main(int argc, char**argv)
+{
+	scene = new Scene();
+
+	RES_X = scene->getWidth();
+	RES_Y = scene->getHeight();
+
+	std::thread thr(glutInitv, std::ref(argc), std::ref(argv));
+	std::thread thr1(loadScene, std::ref(scene));
+	thr.join();
+	thr1.join();
 }

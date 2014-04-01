@@ -1,11 +1,14 @@
 #pragma once
 
 #include "twister.h"
+#include <GL/glut.h>
 #include "includes.h"
 #include "Camera.h"
 #include "NFFLoader.h"
 #include "OutConverter.h"
 #include "Ray.h"
+#include "PieceReader.h"
+#include "Vertex.h"
 #include <thread>
 
 class Scene
@@ -44,6 +47,7 @@ public:
 	Scene();
 
 	void loadNFF(std::string filename);
+	void loadObj(std::string fpath);
 
 	void partialSceneCalculation(int initX, int initY, float endX, float endY);
 	void loadScene();
@@ -57,11 +61,8 @@ public:
 	void genAreaLightPlanes();
 
 	pixel* getPixels(){ return _pixels; };
-
 	int getWidth(){ return _width; }
-
 	int getHeight() { return _height; }
-
 	int getDpi(){ return _dpi; }
 
 };

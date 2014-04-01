@@ -26,6 +26,30 @@ void Scene::loadNFF(std::string fpath)
 	genAreaLightPlanes();
 }
 
+void Scene::loadObj(std::string fpath)
+{
+	PieceReader::getInstance().init();
+	//PieceReader::getInstance().clearAll();
+	PieceReader::getInstance().readObject(fpath);
+	std::vector<Vertex> v = PieceReader::getInstance().getVertices();
+	
+	for (int i = 0; i < v.size(); i += 3)
+	{
+		Triangle *p = new Triangle();
+		p->_id = 0;
+		p->_Kd = 1;
+		p->_Ks = 1;
+		p->_Shine = 10;
+		p->_refract_index = 0;
+		p->_T = 0;
+		p->_RGB = glm::vec3(0.0, 0.0, 1.0f);
+		p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
+		p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
+		p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
+		_geometry.push_back(p);
+	}
+}
+
 void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY)
 {
 	Ray* ray = new Ray();
