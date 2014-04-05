@@ -24,5 +24,5 @@ public:
 	BoundingBox getBBox(){ return _boundingBox; }
 	virtual bool intersect(Ray *r) = 0;
 	virtual glm::vec3 calculateNormal(Ray* r) = 0;
-	virtual void computeBoundingBox();
+	virtual void computeBoundingBox() = 0;
 };

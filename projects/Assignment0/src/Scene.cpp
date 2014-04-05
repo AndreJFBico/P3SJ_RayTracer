@@ -51,6 +51,62 @@ void Scene::loadObj(std::string fpath)
 	}
 }
 
+glm::vec3 Scene::depthOfField(Ray * ray)
+{
+	glm::vec3 rayDirection = ray->direction;
+	glm::vec3 pointAimed = _c->_from + FOCAL_LENGTH * rayDirection;
+	//pointAimed is the position of pixel on focal plane in specified ray
+	//direction and 15 is my focal length(can change accordingly)
+	glm::normalize(rayDirection);
+	float r = 1;
+	glm::vec3 pixelColors = glm::vec3(0.0f);
+	for (int di = 0; di < DEPTH_RAYS; di++)
+	{ // shooting DEPTH_RAYS random rays
+		float du = _t->Rand() * LENS_SIZE;
+		float dv = _t->Rand() * LENS_SIZE;
+
+		// creating new camera position(or ray start using jittering)
+		glm::vec3 start = _c->_from - (r / 2)*_c->_Xe - (r / 2)*_c->_Ye + r*(du)*_c->_Xe + r*(dv)*_c->_Ye;
+
+		//getting the new direction of ray
+		glm::vec3 direction = pointAimed - start;
+
+		glm::normalize(direction);
+		ray->direction = direction;
+		ray->origin = start;
+		glm::vec3 pixelColor = trace(_geometry, ray, 0, false);
+		pixelColors += pixelColor;
+	}
+	return (pixelColors / ((float)DEPTH_RAYS));
+}
+
+/*void Scene::depthOfField(Ray * ray)
+{
+	glm::vec3 rayDirection = ray->direction;
+	glm::vec3 pointAimed = _c->_from + FOCAL_LENGTH * rayDirection;
+	//pointAimed is the position of pixel on focal plane in specified ray
+	//direction and 15 is my focal length(can change accordingly)
+	glm::normalize(rayDirection);
+	float r = 1;
+	glm::vec3 pixelColors = glm::vec3(0.0f);
+
+
+
+	//float du = rand() / float(RAND_MAX + 1);//generating random number
+	//float dv = rand() / float(RAND_MAX + 1);
+
+	// creating new camera position(or ray start using jittering)
+	glm::vec3 start = _c->_from - (r / 2)*_c->_Xe - (r / 2)*_c->_Ye + r*(du)*_c->_Xe + r*(dv)*_c->_Ye;
+
+	//getting the new direction of ray
+	glm::vec3 direction = pointAimed - start;
+
+	glm::normalize(direction);
+	ray->direction = direction;
+	ray->origin = start;
+}*/
+
+
 void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY)
 {
 	Ray* ray = new Ray();
@@ -65,19 +121,26 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 			int currentpixel = y*_width + x;
 			
 			ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
-			_colors[0] = trace(_geometry, ray, 0, false);
+			_colors[0] = depthOfField(ray);
+			//_colors[0] = trace(_geometry, ray, 0, false);
 
 			ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
-			_colors[1] = trace(_geometry, ray, 0, false);
+			_colors[1] = depthOfField(ray);
+			//_colors[1] = trace(_geometry, ray, 0, false);
+
 
 			ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
-			_colors[2] = trace(_geometry, ray, 0, false);
+			_colors[2] = depthOfField(ray);
+			//_colors[2] = trace(_geometry, ray, 0, false);
 
 			ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
-			_colors[3] = trace(_geometry, ray, 0, false);
+			_colors[3] = depthOfField(ray);
+			//_colors[3] = trace(_geometry, ray, 0, false);
 
 			glm::vec3 finalColor = glm::vec3(0.0);
 			finalColor = monteCarloSampling(x, y, _colors, 0, e);
+
+			//glm::vec3 finalColor = depthOfField(ray);
 
 			_pixels[currentpixel].RGB.r = finalColor.r;
 			_pixels[currentpixel].RGB.g = finalColor.g;
@@ -191,29 +254,34 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 		vecAux3[3] = c[3];
 
 		_r->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
-		traceColor = trace(_geometry, _r, 0, false);
+		traceColor = depthOfField(_r);
+		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux[1] = traceColor;
 		vecAux1[0] = traceColor;
 
 		_r->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
-		traceColor = trace(_geometry, _r, 0, false);
+		traceColor = depthOfField(_r);
+		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux[2] = traceColor;
 		vecAux1[3] = traceColor;
 		vecAux2[0] = traceColor;
 		vecAux3[1] = traceColor;
 
 		_r->calculateWCS(glm::vec2(x , y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
-		traceColor = trace(_geometry, _r, 0, false);
+		traceColor = depthOfField(_r);
+		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux[3] = traceColor;
 		vecAux3[0] = traceColor;
 
 		_r->calculateWCS(glm::vec2(x + epsilon, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
-		traceColor = trace(_geometry, _r, 0, false);
+		traceColor = depthOfField(_r);
+		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux1[2] = traceColor;
 		vecAux2[1] = traceColor;
 
 		_r->calculateWCS(glm::vec2(x + e, y + epsilon), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
-		traceColor = trace(_geometry, _r, 0, false);
+		traceColor = depthOfField(_r);
+		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux2[3] = traceColor;
 		vecAux3[2] = traceColor;
 
@@ -547,6 +615,5 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	lightComp.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
 	
-
 	return lightComp;
 }

@@ -58,6 +58,7 @@ public:
 	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted);
 
 	glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* colors, int iter, int epsilon);
+	glm::vec3 depthOfField(Ray * ray);
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
 
