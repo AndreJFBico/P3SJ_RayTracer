@@ -3,19 +3,16 @@
 Grid::Grid(int m)
 {
 	_mFactor = m;
-	//_numObjects = geometrySize(); //funcao de scene.h
 }
 
-void Grid::computeBbox(){
+void Grid::computeBbox(std::vector<Geometry*> objs){
 	
 	BoundingBox objBbox;
 	glm::vec3 p0 = glm::vec3(HUGE_VALUE);
 	glm::vec3 p1 = glm::vec3(SMALL_VALUE);
-	//std::vector<Geometry*> objs = getGeometry(); //funcao de scene.h
-
-	/*
+	
 	for (int i = 0; i < _numObjects; i++){
-		objBbox = objs[i]->getBbox();
+		objBbox = objs[i]->getBBox();
 
 		if(objBbox.min.x < p0.x)
 			p0.x = objBbox.min.x;
@@ -28,7 +25,7 @@ void Grid::computeBbox(){
 	p0.x -= KEPSILON; p0.y -= KEPSILON; p0.z -= KEPSILON;
 
 	for (int i = 0; i < _numObjects; i++){
-		objBbox = objs[i]->getBbox();
+		objBbox = objs[i]->getBBox();
 
 		if(objBbox.max.x > p1.x)
 			p1.x = objBbox.max.x;
@@ -40,5 +37,5 @@ void Grid::computeBbox(){
 
 	p1.x -= KEPSILON; p1.y -= KEPSILON; p1.z -= KEPSILON;
 
-	*/
-};
+	
+}

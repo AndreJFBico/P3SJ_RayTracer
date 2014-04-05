@@ -103,7 +103,9 @@ void Scene::loadScene()
 	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
 	
-	// SETUP GRID HERE!!!!???
+	NotObjects* grid = new Grid(2);
+	((Grid*)grid)->computeBbox(_geometry);
+	((Grid*)grid)->cellsSetup();
 
 	int n = _width*_height;
 	_pixels = new pixel[n];

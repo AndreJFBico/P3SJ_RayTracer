@@ -14,7 +14,7 @@ class Grid : public NotObjects
 	public:
 
 		Grid(int m);
-		void computeBbox();
+		void computeBbox(std::vector<Geometry*> geo);
 		void cellsSetup();
 		void gridTraversal();
 
