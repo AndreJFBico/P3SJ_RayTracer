@@ -14,6 +14,7 @@
     <ClCompile Include="..\src\AABox.cpp" />
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
+    <ClCompile Include="..\src\Cell.cpp" />
     <ClCompile Include="..\src\Geometry.cpp" />
     <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\main.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\src\AABox.h" />
     <ClInclude Include="..\src\BoundingBox.h" />
     <ClInclude Include="..\src\Camera.h" />
+    <ClInclude Include="..\src\Cell.h" />
     <ClInclude Include="..\src\Geometry.h" />
     <ClInclude Include="..\src\Grid.h" />
     <ClInclude Include="..\src\Includes.h" />

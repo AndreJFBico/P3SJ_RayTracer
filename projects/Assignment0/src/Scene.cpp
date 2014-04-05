@@ -103,6 +103,8 @@ void Scene::loadScene()
 	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
 	
+	// SETUP GRID HERE!!!!???
+
 	int n = _width*_height;
 	_pixels = new pixel[n];
 	_RES.x = (float)_width;

@@ -3,9 +3,9 @@
 #include "includes.h"
 #include "Cell.h"
 #include "BoundingBox.h"
-#include "Scene.h"
+#include "NotObjects.h"
 
-class Grid
+class Grid : public NotObjects
 {
 	Cell *_cells;
 	BoundingBox _bbox;

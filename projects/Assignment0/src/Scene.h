@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include "PieceReader.h"
 #include "Vertex.h"
+#include "Grid.h"
 #include <thread>
 
 class Scene
