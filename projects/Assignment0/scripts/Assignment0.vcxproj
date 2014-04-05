@@ -14,6 +14,7 @@
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\Geometry.cpp" />
+    <ClCompile Include="..\src\Grid.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\NFFLoader.cpp" />
     <ClCompile Include="..\src\OutConverter.cpp" />
@@ -30,6 +31,7 @@
     <ClInclude Include="..\src\BoundingBox.h" />
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Geometry.h" />
+    <ClInclude Include="..\src\Grid.h" />
     <ClInclude Include="..\src\Includes.h" />
     <ClInclude Include="..\src\NFFLoader.h" />
     <ClInclude Include="..\src\OutConverter.h" />
