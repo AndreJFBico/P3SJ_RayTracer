@@ -18,6 +18,7 @@ class Grid : public NotObjects
 		void computeBbox(std::vector<Geometry*> geo);
 		void cellsSetup();
 		void gridTraversal();
+		void getCellIndex(int ix, int iy, int iz);
 
 		//GETTERS
 		int getNumCells(){ return _numCells; }
