@@ -50,3 +50,18 @@ void Grid::cellsSetup()
 	_nz = _mFactor*w.z / s + 1;
 
 }
+
+int Grid::getCellIndex(int ix, int iy, int iz)
+{
+	return ix + _nx * iy + _nx * _ny * iz;
+}
+
+void Grid::cellObjectAttribution(std::vector<Geometry*> geo)
+{
+	for each (Geometry* g in geo)
+	{
+		Cell c1 = _cells[getCellIndex(g->getBBox().min.x, g->getBBox().min.y, g->getBBox().min.z)];
+		Cell c2 = _cells[getCellIndex(g->getBBox().max.x, g->getBBox().max.y, g->getBBox().max.z)];
+
+	}
+}
