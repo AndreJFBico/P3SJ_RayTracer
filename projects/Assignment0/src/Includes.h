@@ -23,7 +23,7 @@ const float A_L_X_SIZE = 0.6f;
 const float A_L_Y_SIZE = 0.6f;
 const glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 
-#define NUM_SHADOW_RAYS 60
+#define NUM_SHADOW_RAYS 10
 #define CAPTION "P3SJ"
 #define NUM_THREADS 4
 

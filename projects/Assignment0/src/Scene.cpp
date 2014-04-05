@@ -38,7 +38,7 @@ void Scene::loadObj(std::string fpath)
 		Triangle *p = new Triangle();
 		p->_id = 0;
 		p->_Kd = 1;
-		p->_Ks = 1;
+		p->_Ks = 0.3f;
 		p->_Shine = 10;
 		p->_refract_index = 0;
 		p->_T = 0;
