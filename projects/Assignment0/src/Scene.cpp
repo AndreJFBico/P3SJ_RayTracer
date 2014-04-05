@@ -38,7 +38,7 @@ void Scene::loadObj(std::string fpath)
 		Triangle *p = new Triangle();
 		p->_id = 0;
 		p->_Kd = 1;
-		p->_Ks = 0.5;
+		p->_Ks = 0.3f;
 		p->_Shine = 10;
 		p->_refract_index = 0;
 		p->_T = 0;
@@ -126,7 +126,7 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 			ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
 			_colors[1] = depthOfField(ray);
 			//_colors[1] = trace(_geometry, ray, 0, false);
-			
+
 
 			ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
 			_colors[2] = depthOfField(ray);
@@ -610,6 +610,6 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	lightComp.r = fmin(fmax(lightComp.r, 0.0f), 1.0f);
 	lightComp.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
-
+	
 	return lightComp;
 }
