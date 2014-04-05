@@ -3,8 +3,9 @@
 #include "includes.h"
 #include "Geometry.h"
 #include "Ray.h"
+#include "NotObjects.h"
 
-class Plane : public Geometry
+class Plane : public Geometry, /*interface*/public NotObjects
 {
 public:
 	std::vector<glm::vec3> _vertexes;
@@ -13,6 +14,8 @@ public:
 	Plane();
 
 	glm::vec3 calculateNormal(Ray* r);
+
+	void computeBoundingBox();
 
 	bool intersect(Ray *r);
 };

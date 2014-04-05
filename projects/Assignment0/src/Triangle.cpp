@@ -2,7 +2,7 @@
 
 Triangle::Triangle() : Geometry()
 {
-	
+	_boundingBox = *(new BoundingBox());
 }
 
 bool Triangle::intersect(Ray *r)
@@ -82,4 +82,32 @@ bool Triangle::intersect(Ray *r)
 glm::vec3 Triangle::calculateNormal(Ray* r)
 {
 	return glm::normalize(normal);
+}
+
+void Triangle::computeBoundingBox()
+{
+	glm::vec3 localmin = _vertexes[0];
+	glm::vec3 localmax = _vertexes[0];
+
+	for each (glm::vec3 vertex in _vertexes)
+	{
+		if (vertex.x < localmin.x)
+			localmin.x = vertex.x;
+		else
+			if (vertex.x > localmax.x)
+				localmax.x = vertex.x;
+		if (vertex.y < localmin.y)
+			localmin.y = vertex.y;
+		else
+			if (vertex.y > localmax.y)
+				localmax.y = vertex.y;
+		if (vertex.z < localmin.z)
+			localmin.z = vertex.z;
+		else
+			if (vertex.z > localmax.z)
+				localmax.z = vertex.z;
+
+	}
+	_boundingBox.min = localmin;
+	_boundingBox.max = localmax;
 }

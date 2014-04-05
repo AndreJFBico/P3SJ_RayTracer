@@ -1,8 +1,8 @@
 #include "BoundingBox.h"
 
-BoundingBox::BoundingBox() : Geometry()
+
+BoundingBox::BoundingBox()
 {
-	
 }
 
 bool BoundingBox::intersect(Ray *r)
@@ -40,55 +40,22 @@ bool BoundingBox::intersect(Ray *r)
 	/*// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
 	if (tmax < 0)
 	{
-		t = tmax;
-		return false;
+	t = tmax;
+	return false;
 	}
 
 	// if tmin > tmax, ray doesn't intersect AABB
 	if (tmin > tmax)
 	{
-		t = tmax;
-		return false;
+	t = tmax;
+	return false;
 	}
 
 	t = tmin;*/
-	
+
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
-
-	const float ERR = 0.00001f;
-
-	glm::vec3 center = min + ((max-min)  / 2.0f);
-	if (r->intersectPoint.x > min.x - ERR && r->intersectPoint.x < min.x + ERR)
-	{
-		normal = glm::vec3(-1.0, 0.0, 0.0);
-	}
-	else if (r->intersectPoint.x > max.x - ERR && r->intersectPoint.x < max.x + ERR)
-	{
-		normal = glm::vec3(1.0, 0.0, 0.0);
-	}
-	else if (r->intersectPoint.y > min.y - ERR && r->intersectPoint.y < min.y + ERR)
-	{
-		normal = glm::vec3(0.0, -1.0, 0.0);
-	}
-	else if (r->intersectPoint.y > max.y - ERR && r->intersectPoint.y < max.y + ERR)
-	{
-		normal = glm::vec3(0.0, 1.0, 0.0);
-	}
-	else if (r->intersectPoint.z > min.z - ERR && r->intersectPoint.z < min.z + ERR)
-	{
-		normal = glm::vec3(0.0, 0.0, -1.0);
-	}
-	else if (r->intersectPoint.z > max.z - ERR && r->intersectPoint.z < max.z + ERR)
-	{
-		normal = glm::vec3(0.0, 0.0, 1.0);
-	}
-	else normal = r->intersectPoint;
 	
 	return true;
 }
 
-glm::vec3 BoundingBox::calculateNormal(Ray* r)
-{
-	return normal;
-}

@@ -23,6 +23,7 @@ void Scene::loadNFF(std::string fpath)
 	_lights = NFFLoader::getInstance().getLight();
 	_c = NFFLoader::getInstance().getCamera();
 	_geometry = NFFLoader::getInstance().getGeometry();
+	_planesnGrid = NFFLoader::getInstance().getPlanes();
 	genAreaLightPlanes();
 }
 
@@ -86,7 +87,6 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 	}
 
 }
-
 
 void Scene::genAreaLightPlanes()
 {

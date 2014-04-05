@@ -133,7 +133,7 @@ void NFFLoader::load(std::string fpath)
 			//std::cout << "plane v2 " << ver2.x << " " << ver2.y << " " << ver2.z << std::endl;
 			p->_id = _id;
 			_id += 0.1f;
-			_geometry.push_back(p);
+			_planes.push_back(p);
 		}
 		else
 		if (line.substr(0, 2) == "s ")
@@ -189,7 +189,7 @@ void NFFLoader::load(std::string fpath)
 		{
 			std::istringstream s(line.substr(3));
 			glm::vec3 min, max;
-			BoundingBox * b = new BoundingBox();
+			AABox * b = new AABox();
 			glm::vec3 vertex;
 			b->_RGB = RGB;
 			b->_Kd = Kd;
@@ -232,6 +232,11 @@ Camera * NFFLoader::getCamera()
 std::vector<Geometry*> NFFLoader::getGeometry()
 {
 	return _geometry;
+}
+
+std::vector<NotObjects*> NFFLoader::getPlanes()
+{
+	return _planes;
 }
 
 void NFFLoader::clear()

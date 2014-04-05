@@ -96,11 +96,17 @@
     <ClCompile Include="..\src\Vertex.cpp">
       <Filter>Source Files\PieceReader</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\PieceReader.cpp">
+      <Filter>Source Files\PieceReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AABox.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\BoundingBox.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\PieceReader.cpp">
-      <Filter>Source Files\PieceReader</Filter>
+    <ClCompile Include="..\src\NotObjects.cpp">
+      <Filter>Source Files\Geometry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,11 +146,17 @@
     <ClInclude Include="..\src\Vertex.h">
       <Filter>Header Files\PieceReader</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\PieceReader.h">
+      <Filter>Header Files\PieceReader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AABox.h">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\BoundingBox.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\PieceReader.h">
-      <Filter>Header Files\PieceReader</Filter>
+    <ClInclude Include="..\src\NotObjects.h">
+      <Filter>Header Files\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,8 @@ class Scene
 	Camera *_c;
 	std::vector<Geometry*> _geometry;
 
+	std::vector<NotObjects*> _planesnGrid;
+
 	Twister *_t;
 
 	//structure to store all the pixels after the rendering

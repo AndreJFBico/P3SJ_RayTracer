@@ -2,7 +2,7 @@
 
 Plane::Plane() : Geometry()
 {
-	
+	_boundingBox = *(new BoundingBox());
 }
 
 bool Plane::intersect(Ray *r)
@@ -23,4 +23,9 @@ bool Plane::intersect(Ray *r)
 glm::vec3 Plane::calculateNormal(Ray* r)
 {
 	return glm::normalize(normal);
+}
+
+void Plane::computeBoundingBox()
+{
+
 }

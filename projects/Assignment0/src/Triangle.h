@@ -14,5 +14,7 @@ public:
 
 	glm::vec3 calculateNormal(Ray* r);
 
+	void computeBoundingBox();
+
 	bool intersect(Ray *r);
 };

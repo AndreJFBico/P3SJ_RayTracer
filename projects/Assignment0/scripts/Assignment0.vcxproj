@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AABox.cpp" />
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\Geometry.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\NFFLoader.cpp" />
+    <ClCompile Include="..\src\NotObjects.cpp" />
     <ClCompile Include="..\src\OutConverter.cpp" />
     <ClCompile Include="..\src\PieceReader.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
@@ -27,11 +29,13 @@
     <ClCompile Include="..\src\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\AABox.h" />
     <ClInclude Include="..\src\BoundingBox.h" />
     <ClInclude Include="..\src\Camera.h" />
     <ClInclude Include="..\src\Geometry.h" />
     <ClInclude Include="..\src\Includes.h" />
     <ClInclude Include="..\src\NFFLoader.h" />
+    <ClInclude Include="..\src\NotObjects.h" />
     <ClInclude Include="..\src\OutConverter.h" />
     <ClInclude Include="..\src\PieceReader.h" />
     <ClInclude Include="..\src\Plane.h" />
