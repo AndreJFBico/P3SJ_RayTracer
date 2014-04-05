@@ -56,7 +56,7 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 	glm::vec3 rayDirection = ray->direction;
 	glm::vec3 pointAimed = _c->_from + FOCAL_LENGTH * rayDirection;
 	//pointAimed is the position of pixel on focal plane in specified ray
-	//direction and 15 is my focal length(can change accordingly)
+	//direction and the focal length can change accordingly
 	glm::normalize(rayDirection);
 	float r = 1;
 	glm::vec3 pixelColors = glm::vec3(0.0f);
