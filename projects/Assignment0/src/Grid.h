@@ -10,6 +10,7 @@ class Grid : public NotObjects
 	Cell *_cells;
 	BoundingBox _bbox;
 	int _numCells, _numObjects, _mFactor;
+	int _nx, _ny, _nz;
 
 	public:
 

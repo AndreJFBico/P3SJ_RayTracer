@@ -7,6 +7,7 @@ Grid::Grid(int m)
 
 void Grid::computeBbox(std::vector<Geometry*> objs){
 	
+	_numObjects = objs.size();
 	BoundingBox objBbox;
 	glm::vec3 p0 = glm::vec3(HUGE_VALUE);
 	glm::vec3 p1 = glm::vec3(SMALL_VALUE);
@@ -38,4 +39,14 @@ void Grid::computeBbox(std::vector<Geometry*> objs){
 	p1.x -= KEPSILON; p1.y -= KEPSILON; p1.z -= KEPSILON;
 
 	
+}
+
+void Grid::cellsSetup()
+{
+	glm::vec3 w = _bbox.max - _bbox.min;
+	float s = cbrt(w.x * w.y * w.z / _numObjects);
+	_nx = _mFactor*w.x / s + 1;
+	_ny = _mFactor*w.y / s + 1;
+	_nz = _mFactor*w.z / s + 1;
+
 }
