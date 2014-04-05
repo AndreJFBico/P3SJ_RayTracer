@@ -23,9 +23,12 @@ const float A_L_X_SIZE = 0.6f;
 const float A_L_Y_SIZE = 0.6f;
 const glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 
-#define NUM_SHADOW_RAYS 60
+#define NUM_SHADOW_RAYS 10
 #define CAPTION "P3SJ"
 #define NUM_THREADS 4
+#define FOCAL_LENGTH 2.5f
+#define DEPTH_RAYS 8
+#define LENS_SIZE 1.0f
 
 struct pixel
 {

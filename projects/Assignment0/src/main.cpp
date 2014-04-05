@@ -65,8 +65,8 @@ int glutInitv(int argc, char**argv)
 
 void loadScene(Scene *s)
 {
-	scene->loadNFF("..\\nff\\jap.nff");
-	scene->loadObj("..\\objs\\dragon_0.obj");
+	scene->loadNFF("..\\nff\\balls_low.nff");
+	//scene->loadObj("..\\objs\\dragon_1.obj");
 	scene->loadScene();
 }
 
