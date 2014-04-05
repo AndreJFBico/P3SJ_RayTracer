@@ -170,6 +170,9 @@
     <ClInclude Include="..\src\Cell.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\nff\balls_low.nff">

@@ -16,5 +16,5 @@ public:
 
 	void computeBoundingBox();
 
-	bool intersect(Ray *r);
+	intersectVal intersect(Ray *r);
 };

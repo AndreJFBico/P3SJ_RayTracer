@@ -11,7 +11,9 @@ public:
 	float dToObject;
 	glm::vec3 intersectPoint;
 	bool shadowfillertype;
+	bool insideGrid;
 	float refractionIndex;
+	bool intersectedGrid;
 
 	Ray();
 

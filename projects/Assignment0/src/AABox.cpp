@@ -5,7 +5,7 @@ AABox::AABox() : Geometry()
 	_boundingBox = *(new BoundingBox());
 }
 
-bool AABox::intersect(Ray *r)
+intersectVal AABox::intersect(Ray *r)
 {
 	glm::vec3 dirfrac;
 	// r.dir is unit direction vector of ray
@@ -28,10 +28,10 @@ bool AABox::intersect(Ray *r)
 	float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
 
 	if (tmin < 0 && tmax < 0)
-		return false;
+		return intersectVal(false, NULL);
 
 	if (tmin > tmax)
-		return false;
+		return intersectVal(false, NULL);
 
 	if (tmin < 0 && tmax > 0)
 		t = tmax;
@@ -85,7 +85,7 @@ bool AABox::intersect(Ray *r)
 	}
 	else normal = r->intersectPoint;
 	
-	return true;
+	return intersectVal(true, this);
 }
 
 glm::vec3 AABox::calculateNormal(Ray* r)

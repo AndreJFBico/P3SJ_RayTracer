@@ -5,7 +5,7 @@ Plane::Plane() : Geometry()
 	_boundingBox = *(new BoundingBox());
 }
 
-bool Plane::intersect(Ray *r)
+intersectVal Plane::intersect(Ray *r)
 {
 	normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
 
@@ -15,9 +15,9 @@ bool Plane::intersect(Ray *r)
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 
 	if (d>0)
-		return true;
+		return intersectVal(true, this);
 
-	return false;
+	return intersectVal(false, NULL);
 }
 
 glm::vec3 Plane::calculateNormal(Ray* r)

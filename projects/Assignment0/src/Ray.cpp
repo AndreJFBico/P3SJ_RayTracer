@@ -7,6 +7,8 @@ Ray::Ray()
 	dToObject = 0;
 	shadowfillertype = true; 
 	refractionIndex = 1.0f;
+	insideGrid = false;
+	intersectedGrid = false;
 }
 
 glm::vec3 Ray::calculateWCS(

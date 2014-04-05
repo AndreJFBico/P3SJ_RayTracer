@@ -5,7 +5,7 @@ Sphere::Sphere() : Geometry()
 	_boundingBox = *(new BoundingBox());
 }
 
-bool Sphere::intersect(Ray *r)
+intersectVal Sphere::intersect(Ray *r)
 {
 	//Will hold solution to quadratic equation
 	float t0, t1;
@@ -21,7 +21,7 @@ bool Sphere::intersect(Ray *r)
 
 	if (disc < 0.0) //If discriminant is negative no intersection happens
 	{
-		return false;
+		return intersectVal(false, NULL);
 	}
 	else if (disc == 0)
 	{
@@ -43,16 +43,16 @@ bool Sphere::intersect(Ray *r)
 			t0 = c / q;
 
 			if (t1 < 0)
-				return false;
+				return intersectVal(false, NULL);
 
 			t = t0;
 		}
 
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		return true;
+		return intersectVal(true, this);
 	}
-	return false;
+	return intersectVal(false, NULL);
 }
 
 glm::vec3 Sphere::calculateNormal(Ray* r)

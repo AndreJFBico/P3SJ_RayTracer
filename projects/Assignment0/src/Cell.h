@@ -10,8 +10,9 @@ class Cell
 public:
 	Cell();
 
+	void addObj(Geometry* geo);
+	std::vector<Geometry*> getObjs() { return _objects; }
 	
-	
-	virtual ~Cell();
+	~Cell();
 };
 

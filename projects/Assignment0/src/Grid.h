@@ -7,10 +7,11 @@
 
 class Grid : public NotObjects
 {
-	Cell *_cells;
+	std::vector<Cell*> _cells;
 	BoundingBox _bbox;
 	int _numCells, _numObjects, _mFactor;
 	int _nx, _ny, _nz;
+	std::vector<Geometry*> _intersected;
 
 	public:
 
@@ -18,12 +19,13 @@ class Grid : public NotObjects
 		void computeBbox(std::vector<Geometry*> geo);
 		void cellsSetup();
 		void cellObjectAttribution(std::vector<Geometry*> geo);
-		void gridTraversal();
-		int getCellIndex(int ix, int iy, int iz);
+		std::vector<Geometry*> gridTraversal(int ix, int iy, int iz);
+		intersectVal intersect(Ray* r);
+		int getCellArrayIndex(int ix, int iy, int iz);
 
 		//GETTERS
 		int getNumCells(){ return _numCells; }
-		Cell *getCells(){ return _cells; }
+		std::vector<Cell*> getCells(){ return _cells; }
 		BoundingBox getBbox(){ return _bbox; }
 
 };

@@ -46,6 +46,7 @@
     <ClInclude Include="..\src\Ray.h" />
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />
+    <ClInclude Include="..\src\Structs.h" />
     <ClInclude Include="..\src\Triangle.h" />
     <ClInclude Include="..\src\twister.h" />
     <ClInclude Include="..\src\Vertex.h" />

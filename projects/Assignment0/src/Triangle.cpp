@@ -5,7 +5,7 @@ Triangle::Triangle() : Geometry()
 	_boundingBox = *(new BoundingBox());
 }
 
-bool Triangle::intersect(Ray *r)
+intersectVal Triangle::intersect(Ray *r)
 {
 	//Calculating normal.
 	normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
@@ -16,7 +16,7 @@ bool Triangle::intersect(Ray *r)
 	glm::vec3 P = r->origin + r->direction*d;
 	
 	if (d<0)
-		return false;
+		return intersectVal(false, NULL);
 
 
 	int i0, i1, i2;
@@ -74,9 +74,9 @@ bool Triangle::intersect(Ray *r)
 	{
 		r->intersectPoint = P;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		return true;
+		return intersectVal(true, this);
 	}
-	return false;
+	return intersectVal(false, NULL);
 }
 
 glm::vec3 Triangle::calculateNormal(Ray* r)
