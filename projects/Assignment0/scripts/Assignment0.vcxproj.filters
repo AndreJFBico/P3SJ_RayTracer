@@ -108,6 +108,9 @@
     <ClCompile Include="..\src\NotObjects.cpp">
       <Filter>Source Files\Geometry</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Grid.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Includes.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="..\src\NotObjects.h">
       <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Grid.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
