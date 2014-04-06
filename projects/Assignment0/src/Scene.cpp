@@ -189,11 +189,11 @@ void Scene::loadScene()
 	_RES.x = (float)_width;
 	_RES.y = (float)_height;
 
-	//std::thread first([=](){partialSceneCalculation(0, 0, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
+	std::thread first([=](){partialSceneCalculation(0, 0, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 
-	//std::thread second([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	std::thread second([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
-	//std::thread third([=](){partialSceneCalculation(0, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	std::thread third([=](){partialSceneCalculation(0, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
 	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
@@ -207,9 +207,9 @@ void Scene::loadScene()
 	std::thread eighth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 	/**/
 
-	//first.join();
-	//second.join();
-	//third.join();
+	first.join();
+	second.join();
+	third.join();
 	forth.join();
 	/** /
 	fifth.join();

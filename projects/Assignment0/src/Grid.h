@@ -11,7 +11,6 @@ class Grid : public NotObjects
 	BoundingBox _bbox;
 	int _numCells, _numObjects, _mFactor;
 	int _nx, _ny, _nz;
-	std::vector<Geometry*> _intersected;
 
 	public:
 
@@ -19,7 +18,7 @@ class Grid : public NotObjects
 		void computeBbox(std::vector<Geometry*> geo);
 		void cellsSetup();
 		void cellObjectAttribution(std::vector<Geometry*> geo);
-		std::vector<Geometry*> gridTraversal(int ix, int iy, int iz);
+		std::vector<Geometry*> gridTraversal(int ix, int iy, int iz, Ray* r);
 		intersectVal intersect(Ray* r);
 		int getCellArrayIndex(int ix, int iy, int iz);
 
