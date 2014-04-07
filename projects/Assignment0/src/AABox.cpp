@@ -95,7 +95,7 @@ glm::vec3 AABox::calculateNormal(Ray* r)
 
 void AABox::computeBoundingBox()
 {
-	_boundingBox.min = min - glm::vec3(0.1f, 0.1f, 0.1f);
-	_boundingBox.max = max + glm::vec3(0.1f, 0.1f, 0.1f);
+	_boundingBox.min = min - glm::vec3(0.001f, 0.001f, 0.001f);
+	_boundingBox.max = max + glm::vec3(0.001f, 0.001f, 0.001f);
 
 }

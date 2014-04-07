@@ -51,22 +51,31 @@ void Scene::loadObj(std::string fpath)
 	}
 }
 
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
 glm::vec3 Scene::depthOfField(Ray * ray)
 {
 	glm::vec3 rayDirection = ray->direction;
 	glm::vec3 pointAimed = _c->_from + FOCAL_LENGTH * rayDirection;
 	//pointAimed is the position of pixel on focal plane in specified ray
-	//direction and the focal length can change accordingly
+	//direction and 15 is my focal length(can change accordingly)
 	glm::normalize(rayDirection);
 	float r = 1;
 	glm::vec3 pixelColors = glm::vec3(0.0f);
 	for (int di = 0; di < DEPTH_RAYS; di++)
 	{ // shooting DEPTH_RAYS random rays
-		float du = _t->Rand() * LENS_SIZE;
-		float dv = _t->Rand() * LENS_SIZE;
+		float du = RandomFloat(-LENS_SIZE, LENS_SIZE);
+		float dv = RandomFloat(-LENS_SIZE, LENS_SIZE);
 
 		// creating new camera position(or ray start using jittering)
-		glm::vec3 start = _c->_from - (r / 2)*_c->_Xe - (r / 2)*_c->_Ye + r*(du)*_c->_Xe + r*(dv)*_c->_Ye;
+		//glm::vec3 start = _c->_from - (r / 2)*_c->_Xe - (r / 2)*_c->_Ye + r*(du)*_c->_Xe + r*(dv)*_c->_Ye;
+
+		glm::vec3 start = _c->_from - _c->_Xe*du - _c->_Ye*dv;
 
 		//getting the new direction of ray
 		glm::vec3 direction = pointAimed - start;

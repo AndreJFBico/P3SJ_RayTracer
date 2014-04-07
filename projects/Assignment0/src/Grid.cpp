@@ -74,12 +74,12 @@ void Grid::cellObjectAttribution(std::vector<Geometry*> geo)
 		//Cell c1 = _cells[getCellArrayIndex(g->getBBox().min.x, g->getBBox().min.y, g->getBBox().min.z)];
 		//Cell c2 = _cells[getCellArrayIndex(g->getBBox().max.x, g->getBBox().max.y, g->getBBox().max.z)];
 
-		int ixmin = clamp(abs((g->_boundingBox.min.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x)), 0, _nx - 1);
-		int iymin = clamp(abs((g->_boundingBox.min.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y)), 0, _ny - 1);
-		int izmin = clamp(abs((g->_boundingBox.min.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z)), 0, _nz - 1);
-		int ixmax = clamp(abs((g->_boundingBox.max.x - _bbox.max.x) * _nx / (_bbox.max.x - _bbox.max.x)), 0, _nx - 1);
-		int iymax = clamp(abs((g->_boundingBox.max.y - _bbox.max.y) * _ny / (_bbox.max.y - _bbox.max.y)), 0, _ny - 1);
-		int izmax = clamp(abs((g->_boundingBox.max.z - _bbox.max.z) * _nz / (_bbox.max.z - _bbox.max.z)), 0, _nz - 1);
+		int ixmin = clamp((g->_boundingBox.min.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
+		int iymin = clamp((g->_boundingBox.min.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
+		int izmin = clamp((g->_boundingBox.min.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
+		int ixmax = clamp((g->_boundingBox.max.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
+		int iymax = clamp((g->_boundingBox.max.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
+		int izmax = clamp((g->_boundingBox.max.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
 
 		/*int temp = 0;
 		if (ixmin > ixmax) temp = ixmin, ixmin = ixmax, ixmax = temp;
@@ -114,10 +114,7 @@ intersectVal Grid::intersect(Ray* r)
 		intersectedcell = _cells[getCellArrayIndex(ix, iy, iz)];
 	}
 	else{
-		float n1 = (r->intersectPoint.x - _bbox.min.x) * _nx;
-		float n2 = (_bbox.max.x - _bbox.min.x);
-		float n3 = n1 / n2;
-		ix = clamp(n1 / n2, 0, _nx - 1);
+		ix = clamp((r->intersectPoint.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
 		iy = clamp((r->intersectPoint.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
 		iz = clamp((r->intersectPoint.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
 
@@ -176,13 +173,18 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 	float stepX = 1;
 	float stepY = 1;
 	float stepZ = 1;
+	
+	bool hit;
+	Ray ray;
+	std::vector<Geometry*> intersected;
+	std::vector<Geometry*> objs;
 
 	while (true)
 	{
-		Ray ray = *r;
-		bool hit = false;
-		std::vector<Geometry*> objs = _cells[getCellArrayIndex(ix, iy, iz)]->getObjs();
-		std::vector<Geometry*> intersected;
+		ray = *r;
+		hit = false;
+		objs = _cells[getCellArrayIndex(ix, iy, iz)]->getObjs();
+		
 		
 		if (tx_next < ty_next && tx_next < tz_next)
 		{
@@ -192,8 +194,10 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 					intersectVal v = g->intersect(&ray);
 					if (v.intersected)
 					{
-						if (ray.intersectPoint.x < tx_next)
-								intersected.push_back(v.nearest);
+						if (ray.intersectPoint.x < tx_next){
+							intersected.push_back(v.nearest);
+							hit = true;
+						}
 					}
 				}
 				if (hit)
@@ -214,8 +218,10 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 					intersectVal v = g->intersect(&ray);
 					if (v.intersected)
 					{
-						if (ray.intersectPoint.y < ty_next)
+						if (ray.intersectPoint.y < ty_next){
 							intersected.push_back(v.nearest);
+							hit = true;
+						}
 					}
 				}
 				if (hit)
@@ -235,8 +241,10 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 					intersectVal v = g->intersect(&ray);
 					if (v.intersected)
 					{
-						if (ray.intersectPoint.z < tz_next)
+						if (ray.intersectPoint.z < tz_next){
 							intersected.push_back(v.nearest);
+							hit = true;
+						}
 					}
 				}
 				if (hit)
