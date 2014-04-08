@@ -11,14 +11,11 @@ intersectVal Plane::intersect(Ray *r)
 
 	float d = glm::dot(_vertexes[1] - r->origin, normal) / glm::dot(r->direction, normal);
 
+	r->intersectPoint = r->origin + r->direction*d;
+	r->dToObject = glm::length(r->intersectPoint - r->origin);
 
-	if (d > 0)
-	{
-		r->intersectPoint = r->origin + r->direction*d;
-		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		r->t = d;
+	if (d>0)
 		return intersectVal(true, this);
-	}
 
 	return intersectVal(false, NULL);
 }

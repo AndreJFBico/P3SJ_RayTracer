@@ -47,7 +47,7 @@ intersectVal Sphere::intersect(Ray *r)
 
 			t = t0;
 		}
-		r->t = t;
+
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return intersectVal(true, this);
@@ -65,18 +65,11 @@ void Sphere::computeBoundingBox()
 {
 	glm::vec3 localmin, localmax;
 
-	_boundingBox.min.x = _center.x - (_radius - 0.001f);
-	_boundingBox.min.y = _center.y - (_radius - 0.001f);
-	_boundingBox.min.z = _center.z - (_radius - 0.001f);
+	_boundingBox.min.x = _center.x - (_radius + 0.001f);
+	_boundingBox.min.y = _center.y - (_radius + 0.001f);
+	_boundingBox.min.z = _center.z - (_radius + 0.001f);
 
 	_boundingBox.max.x = _center.x + (_radius + 0.001f);
 	_boundingBox.max.y = _center.y + (_radius + 0.001f);
 	_boundingBox.max.z = _center.z + (_radius + 0.001f);
-	/*_boundingBox.min.x = -0.5f;
-	_boundingBox.min.y = -0.5f;
-	_boundingBox.min.z = -0.5f;
-
-	_boundingBox.max.x = 0.5f;
-	_boundingBox.max.y = 0.5f;
-	_boundingBox.max.z = 0.5f;*/
 }

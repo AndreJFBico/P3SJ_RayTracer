@@ -74,7 +74,6 @@ intersectVal Triangle::intersect(Ray *r)
 	{
 		r->intersectPoint = P;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		r->t = d;
 		return intersectVal(true, this);
 	}
 	return intersectVal(false, NULL);

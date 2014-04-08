@@ -34,13 +34,8 @@ intersectVal BoundingBox::intersect(Ray *r)
 		return intersectVal(false, NULL);
 
 	if (tmin < 0 && tmax > 0)
-	{
 		t = tmax;
-	}
-	else
-	{
-		t = tmin;
-	}
+	else t = tmin;
 
 	/*// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
 	if (tmax < 0)
@@ -60,7 +55,6 @@ intersectVal BoundingBox::intersect(Ray *r)
 	_tmin = r->origin + r->direction*tmin;
 	_tmax = r->origin + r->direction*tmax;
 	_tminf = tmin;
-	r->t = t;
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 	
