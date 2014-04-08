@@ -99,7 +99,7 @@ void Grid::cellObjectAttribution(std::vector<Geometry*> geo)
 
 intersectVal Grid::intersect(Ray* r)
 {
-	float ix, iy, iz;
+	int ix, iy, iz;
 	Cell* intersectedcell;
 	if (!(_bbox.intersect(r).intersected))
 		return intersectVal(false, NULL);
@@ -110,15 +110,11 @@ intersectVal Grid::intersect(Ray* r)
 		ix = clamp((r->origin.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
 		iy = clamp((r->origin.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
 		iz = clamp((r->origin.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
-
-		intersectedcell = _cells[getCellArrayIndex(ix, iy, iz)];
 	}
 	else{
 		ix = clamp((r->intersectPoint.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
 		iy = clamp((r->intersectPoint.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
 		iz = clamp((r->intersectPoint.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
-
-		intersectedcell = _cells[getCellArrayIndex(ix, iy, iz)];
 	}
 	
 	std::vector<Geometry*> intersected = gridTraversal(ix, iy, iz, r);
