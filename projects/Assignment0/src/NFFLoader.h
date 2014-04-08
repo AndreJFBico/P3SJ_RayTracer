@@ -5,7 +5,8 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Triangle.h"
-#include "BoundingBox.h"
+#include "AABox.h"
+#include "NotObjects.h"
 
 class NFFLoader
 {
@@ -34,6 +35,7 @@ class NFFLoader
 	Camera *_c;
 
 	std::vector<Geometry*> _geometry;
+	std::vector<NotObjects*> _planes;
 
 	NFFLoader();
 	NFFLoader(NFFLoader const&);
@@ -52,6 +54,7 @@ public:
 	std::vector<light> getLight();
 	Camera * getCamera();
 	std::vector<Geometry*> getGeometry();
+	std::vector<NotObjects*> getPlanes();
 
 	void clear();
 

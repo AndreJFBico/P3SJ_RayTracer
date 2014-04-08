@@ -1,18 +1,21 @@
 #pragma once
 
-#include "includes.h"
-#include "Geometry.h"
 #include "Ray.h"
+#include "includes.h"
+#include "Structs.h"
 
-class BoundingBox : public Geometry
+class BoundingBox
 {
 public:
 	glm::vec3 min, max;
-	glm::vec3 normal;
+	glm::vec3 _tmax, _tmin;
+	float _tminf;
 
 	BoundingBox();
 
-	glm::vec3 calculateNormal(Ray* r);
+	void computeBoundingBox();
 
-	bool intersect(Ray *r);
+	intersectVal intersect(Ray *r);
+
 };
+

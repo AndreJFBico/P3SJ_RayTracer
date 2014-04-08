@@ -9,6 +9,8 @@
 #include "Ray.h"
 #include "PieceReader.h"
 #include "Vertex.h"
+#include "Grid.h"
+#include "Structs.h"
 #include <thread>
 
 class Scene
@@ -37,6 +39,8 @@ class Scene
 	Camera *_c;
 	std::vector<Geometry*> _geometry;
 
+	std::vector<NotObjects*> _planesnGrid;
+
 	Twister *_t;
 
 	//structure to store all the pixels after the rendering
@@ -51,8 +55,9 @@ public:
 
 	void partialSceneCalculation(int initX, int initY, float endX, float endY);
 	void loadScene();
+	void computeObjsBB();
 
-	glm::vec3 trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted);
+	glm::vec3 trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth, bool refracted);
 
 	glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* colors, int iter, int epsilon);
 	glm::vec3 depthOfField(Ray * ray);
@@ -68,20 +73,3 @@ public:
 
 };
 
-struct rayPos
-{
-	Ray* ray;
-	/*-----*/ 
-	glm::vec3 pos;
-	/*-----*/
-	rayPos(Ray * r, glm::vec3 p) : ray(r), pos(p){}
-};
-
-struct lightRays
-{
-	int l;
-	/*-----*/
-	std::vector<rayPos> rays;
-	/*-----*/
-	lightRays(int i, std::vector<rayPos> r) : l(i), rays(r){}
-};

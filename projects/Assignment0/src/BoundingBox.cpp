@@ -1,11 +1,11 @@
 #include "BoundingBox.h"
 
-BoundingBox::BoundingBox() : Geometry()
+
+BoundingBox::BoundingBox()
 {
-	
 }
 
-bool BoundingBox::intersect(Ray *r)
+intersectVal BoundingBox::intersect(Ray *r)
 {
 	glm::vec3 dirfrac;
 	// r.dir is unit direction vector of ray
@@ -28,67 +28,41 @@ bool BoundingBox::intersect(Ray *r)
 	float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
 
 	if (tmin < 0 && tmax < 0)
-		return false;
+		return intersectVal(false, NULL);
 
 	if (tmin > tmax)
-		return false;
+		return intersectVal(false, NULL);
 
 	if (tmin < 0 && tmax > 0)
+	{
 		t = tmax;
-	else t = tmin;
+	}
+	else
+	{
+		t = tmin;
+	}
 
 	/*// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
 	if (tmax < 0)
 	{
-		t = tmax;
-		return false;
+	t = tmax;
+	return false;
 	}
 
 	// if tmin > tmax, ray doesn't intersect AABB
 	if (tmin > tmax)
 	{
-		t = tmax;
-		return false;
+	t = tmax;
+	return false;
 	}
 
 	t = tmin;*/
-	
+	_tmin = r->origin + r->direction*tmin;
+	_tmax = r->origin + r->direction*tmax;
+	_tminf = tmin;
+	r->t = t;
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
-
-	const float ERR = 0.00001f;
-
-	glm::vec3 center = min + ((max-min)  / 2.0f);
-	if (r->intersectPoint.x > min.x - ERR && r->intersectPoint.x < min.x + ERR)
-	{
-		normal = glm::vec3(-1.0, 0.0, 0.0);
-	}
-	else if (r->intersectPoint.x > max.x - ERR && r->intersectPoint.x < max.x + ERR)
-	{
-		normal = glm::vec3(1.0, 0.0, 0.0);
-	}
-	else if (r->intersectPoint.y > min.y - ERR && r->intersectPoint.y < min.y + ERR)
-	{
-		normal = glm::vec3(0.0, -1.0, 0.0);
-	}
-	else if (r->intersectPoint.y > max.y - ERR && r->intersectPoint.y < max.y + ERR)
-	{
-		normal = glm::vec3(0.0, 1.0, 0.0);
-	}
-	else if (r->intersectPoint.z > min.z - ERR && r->intersectPoint.z < min.z + ERR)
-	{
-		normal = glm::vec3(0.0, 0.0, -1.0);
-	}
-	else if (r->intersectPoint.z > max.z - ERR && r->intersectPoint.z < max.z + ERR)
-	{
-		normal = glm::vec3(0.0, 0.0, 1.0);
-	}
-	else normal = r->intersectPoint;
 	
-	return true;
-}
-
-glm::vec3 BoundingBox::calculateNormal(Ray* r)
-{
-	return normal;
+	return intersectVal(true, NULL);
 }

@@ -2,10 +2,10 @@
 
 Triangle::Triangle() : Geometry()
 {
-	
+	_boundingBox = *(new BoundingBox());
 }
 
-bool Triangle::intersect(Ray *r)
+intersectVal Triangle::intersect(Ray *r)
 {
 	//Calculating normal.
 	normal = glm::cross(_vertexes[0] - _vertexes[1], _vertexes[1] - _vertexes[2]);
@@ -16,7 +16,7 @@ bool Triangle::intersect(Ray *r)
 	glm::vec3 P = r->origin + r->direction*d;
 	
 	if (d<0)
-		return false;
+		return intersectVal(false, NULL);
 
 
 	int i0, i1, i2;
@@ -74,12 +74,41 @@ bool Triangle::intersect(Ray *r)
 	{
 		r->intersectPoint = P;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		return true;
+		r->t = d;
+		return intersectVal(true, this);
 	}
-	return false;
+	return intersectVal(false, NULL);
 }
 
 glm::vec3 Triangle::calculateNormal(Ray* r)
 {
 	return glm::normalize(normal);
+}
+
+void Triangle::computeBoundingBox()
+{
+	glm::vec3 localmin = _vertexes[0];
+	glm::vec3 localmax = _vertexes[0];
+
+	for each (glm::vec3 vertex in _vertexes)
+	{
+		if (vertex.x < localmin.x)
+			localmin.x = vertex.x;
+		else
+			if (vertex.x > localmax.x)
+				localmax.x = vertex.x;
+		if (vertex.y < localmin.y)
+			localmin.y = vertex.y;
+		else
+			if (vertex.y > localmax.y)
+				localmax.y = vertex.y;
+		if (vertex.z < localmin.z)
+			localmin.z = vertex.z;
+		else
+			if (vertex.z > localmax.z)
+				localmax.z = vertex.z;
+
+	}
+	_boundingBox.min = localmin;
+	_boundingBox.max = localmax;
 }

@@ -2,6 +2,8 @@
 
 #include "includes.h"
 #include "Ray.h"
+#include "BoundingBox.h"
+#include "Structs.h"
 
 class Geometry
 {
@@ -16,8 +18,12 @@ public:
 	float _refract_index;
 	float _id;
 
+	BoundingBox _boundingBox;
+
 	Geometry();
 
-	virtual bool intersect(Ray *r) = 0;
+	BoundingBox getBBox(){ return _boundingBox; }
+	virtual intersectVal intersect(Ray *r) = 0;
 	virtual glm::vec3 calculateNormal(Ray* r) = 0;
+	virtual void computeBoundingBox() = 0;
 };

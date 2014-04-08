@@ -3,15 +3,14 @@
 #include "includes.h"
 #include "Geometry.h"
 #include "Ray.h"
-#include "NotObjects.h"
 
-class Plane : public Geometry, /*interface*/public NotObjects
+class AABox : public Geometry
 {
 public:
-	std::vector<glm::vec3> _vertexes;
+	glm::vec3 min, max;
 	glm::vec3 normal;
 
-	Plane();
+	AABox();
 
 	glm::vec3 calculateNormal(Ray* r);
 

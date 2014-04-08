@@ -2,10 +2,10 @@
 
 Sphere::Sphere() : Geometry()
 {
-	
+	_boundingBox = *(new BoundingBox());
 }
 
-bool Sphere::intersect(Ray *r)
+intersectVal Sphere::intersect(Ray *r)
 {
 	//Will hold solution to quadratic equation
 	float t0, t1;
@@ -21,7 +21,7 @@ bool Sphere::intersect(Ray *r)
 
 	if (disc < 0.0) //If discriminant is negative no intersection happens
 	{
-		return false;
+		return intersectVal(false, NULL);
 	}
 	else if (disc == 0)
 	{
@@ -43,20 +43,40 @@ bool Sphere::intersect(Ray *r)
 			t0 = c / q;
 
 			if (t1 < 0)
-				return false;
+				return intersectVal(false, NULL);
 
 			t = t0;
 		}
-
+		r->t = t;
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
-		return true;
+		return intersectVal(true, this);
 	}
-	return false;
+	return intersectVal(false, NULL);
 }
 
 glm::vec3 Sphere::calculateNormal(Ray* r)
 {
 	glm::vec3 normal = r->intersectPoint - _center;
 	return glm::normalize(normal);
+}
+
+void Sphere::computeBoundingBox()
+{
+	glm::vec3 localmin, localmax;
+
+	_boundingBox.min.x = _center.x - (_radius - 0.001f);
+	_boundingBox.min.y = _center.y - (_radius - 0.001f);
+	_boundingBox.min.z = _center.z - (_radius - 0.001f);
+
+	_boundingBox.max.x = _center.x + (_radius + 0.001f);
+	_boundingBox.max.y = _center.y + (_radius + 0.001f);
+	_boundingBox.max.z = _center.z + (_radius + 0.001f);
+	/*_boundingBox.min.x = -0.5f;
+	_boundingBox.min.y = -0.5f;
+	_boundingBox.min.z = -0.5f;
+
+	_boundingBox.max.x = 0.5f;
+	_boundingBox.max.y = 0.5f;
+	_boundingBox.max.z = 0.5f;*/
 }

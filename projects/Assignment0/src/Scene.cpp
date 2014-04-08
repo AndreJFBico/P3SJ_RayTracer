@@ -23,6 +23,7 @@ void Scene::loadNFF(std::string fpath)
 	_lights = NFFLoader::getInstance().getLight();
 	_c = NFFLoader::getInstance().getCamera();
 	_geometry = NFFLoader::getInstance().getGeometry();
+	_planesnGrid = NFFLoader::getInstance().getPlanes();
 	genAreaLightPlanes();
 }
 
@@ -82,7 +83,7 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 		glm::normalize(direction);
 		ray->direction = direction;
 		ray->origin = start;
-		glm::vec3 pixelColor = trace(_geometry, ray, 0, false);
+		glm::vec3 pixelColor = trace(_planesnGrid, ray, 0, false);
 		pixelColors += pixelColor;
 	}
 	return (pixelColors / ((float)DEPTH_RAYS));
@@ -159,7 +160,6 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 
 }
 
-
 void Scene::genAreaLightPlanes()
 {
 	for (unsigned int i = 0; i < _lights.size(); i++)
@@ -170,11 +170,29 @@ void Scene::genAreaLightPlanes()
 	}
 }
 
+void Scene::computeObjsBB()
+{
+	for each (Geometry* g in _geometry)
+	{
+		g->computeBoundingBox();
+	}
+}
+
 void Scene::loadScene()
 {
 	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
 	
+	computeObjsBB();
+	if (_geometry.size() > 0)
+	{
+		NotObjects* grid = new Grid(2);
+		((Grid*)grid)->computeBbox(_geometry);
+		((Grid*)grid)->cellsSetup();
+		((Grid*)grid)->cellObjectAttribution(_geometry);
+		_planesnGrid.insert(_planesnGrid.begin(), grid);
+	}
+
 	int n = _width*_height;
 	_pixels = new pixel[n];
 	_RES.x = (float)_width;
@@ -187,7 +205,7 @@ void Scene::loadScene()
 	std::thread third([=](){partialSceneCalculation(0, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
 	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
+	
 	/** /
 	std::thread fifth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 
@@ -216,7 +234,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	
 	Ray* _r = new Ray();
 
-	float threshold = 2.9f;
+	float threshold = 2.7f;
 	int e = epsilon / 2;
 	glm::vec3 vecAux[4], vecAux1[4], vecAux2[4], vecAux3[4];
 
@@ -311,20 +329,21 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	return res;
 };
 
-glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& ray, Geometry*& nearest)
+glm::vec3 calculateRayObjectIntersection(std::vector<NotObjects*> planesnGrid, Ray*& ray, Geometry*& nearest)
 {
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
 	float prevD2Obj = (float)INT_MAX;
 
-	for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
+	for (std::vector<NotObjects*>::iterator it = planesnGrid.begin(); it != planesnGrid.end(); it++)
 	{
-		if ((*it)->intersect(ray))
+		intersectVal v = (*it)->intersect(ray);
+		if (v.intersected)
 		{
 			//checks if object is closer
 			if (ray->dToObject < prevD2Obj)
 			{
 				closestintersect = ray->intersectPoint;
-				nearest = (*it);
+				nearest = v.nearest;
 				prevD2Obj = ray->dToObject;
 			}
 		}
@@ -335,14 +354,15 @@ glm::vec3 calculateRayObjectIntersection(std::vector<Geometry*> geometry, Ray*& 
 	return closestintersect;
 }
 
-void checkColisionOfShadowRays(std::vector<Geometry*> geometry, std::vector<Ray*>& shadowfillers)
+void checkColisionOfShadowRays(std::vector<NotObjects*> planesnGrid, std::vector<Ray*>& shadowfillers)
 {
 	//See if it collides with any object in the scene
-	for (std::vector<Geometry*>::iterator it = geometry.begin(); it != geometry.end(); it++)
+	for (std::vector<NotObjects*>::iterator it = planesnGrid.begin(); it != planesnGrid.end(); it++)
 	{
 		for (std::vector<Ray*>::iterator it2 = shadowfillers.begin(); it2 != shadowfillers.end(); it2++)
 		{
-			if ((*it)->intersect(*it2))
+			intersectVal v = (*it)->intersect(*it2);
+			if (v.intersected)
 			{
 				(*it2)->shadowfillertype = false;
 			}
@@ -352,7 +372,7 @@ void checkColisionOfShadowRays(std::vector<Geometry*> geometry, std::vector<Ray*
 
 void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
 							std::vector<lightRays>* lightsOfSF, std::vector<light> lights,
-							bool refracted, glm::vec3 closestintersect, std::vector<Geometry*> geometry, Twister *t)
+							bool refracted, glm::vec3 closestintersect, std::vector<NotObjects*> planesnGrid, Twister *t)
 {
 	int j = 0;
 	for (light l : lights)
@@ -416,7 +436,7 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 		if (!rays_pos.empty())
 		{
 			lightsOfSF->push_back(lightRays(j, rays_pos));
-			checkColisionOfShadowRays(geometry, shadowfillers);
+			checkColisionOfShadowRays(planesnGrid, shadowfillers);
 		}
 		j++;
 	}
@@ -530,7 +550,7 @@ void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, 
 	}*/
 }
 
-glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, bool refracted)
+glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth, bool refracted)
 {
 	Geometry* nearest = NULL;
 	glm::vec3 closestintersect = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -540,7 +560,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	//++++++++++++++ CALCULO DE INTERSECÇÃO +++++++++++++++
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	closestintersect = calculateRayObjectIntersection(_geometry, ray, nearest);
+	closestintersect = calculateRayObjectIntersection(planesnGrid, ray, nearest);
 
 	//if there was an intersection calculates shadowfillers
 	if (nearest == NULL)
@@ -556,7 +576,7 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 	glm::vec3 lightComp = glm::vec3(0.0);
 
 	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
-	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _geometry, _t);
+	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _planesnGrid, _t);
 
 	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
 
@@ -584,13 +604,13 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		if (refracted)
 		{
 			rRay = ray->reflect(-normal);
-			rColor = trace(geometry, rRay, depth + 1, refracted);
+			rColor = trace(planesnGrid, rRay, depth + 1, refracted);
 			lightComp = rColor* nearest->_Ks/2.0f + lightComp;
 		}
 		else
 		{
 			rRay = ray->reflect(normal);
-			rColor = trace(geometry, rRay, depth + 1, refracted);
+			rColor = trace(planesnGrid, rRay, depth + 1, refracted);
 			lightComp = rColor* nearest->_Ks + lightComp;
 		}	
 	}
@@ -605,11 +625,11 @@ glm::vec3 Scene::trace(std::vector<Geometry*> geometry, Ray* ray, int depth, boo
 		if (refracted)
 		{
 			tRay = ray->refract(-normal, 1.0f);
-			tColor = trace(geometry, tRay, depth + 1, false);
+			tColor = trace(planesnGrid, tRay, depth + 1, false);
 		}
 		else {
 			tRay = ray->refract(normal, nearest->_refract_index);
-			tColor = trace(geometry, tRay, depth + 1, true);
+			tColor = trace(planesnGrid, tRay, depth + 1, true);
 		}
 		
 		lightComp = tColor* nearest->_T/1.1f + lightComp;
