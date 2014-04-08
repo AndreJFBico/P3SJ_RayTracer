@@ -205,7 +205,7 @@ void Scene::loadScene()
 	std::thread third([=](){partialSceneCalculation(0, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
 
 	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
+	
 	/** /
 	std::thread fifth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 

@@ -84,7 +84,7 @@ intersectVal AABox::intersect(Ray *r)
 		normal = glm::vec3(0.0, 0.0, 1.0);
 	}
 	else normal = r->intersectPoint;
-	
+	r->t = t;
 	return intersectVal(true, this);
 }
 
