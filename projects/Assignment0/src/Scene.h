@@ -53,7 +53,7 @@ public:
 	void loadNFF(std::string filename);
 	void loadObj(std::string fpath);
 
-	void partialSceneCalculation(int initX, int initY, float endX, float endY);
+	void partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter);
 	void loadScene();
 	void computeObjsBB();
 
