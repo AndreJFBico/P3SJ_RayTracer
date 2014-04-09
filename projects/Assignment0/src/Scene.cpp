@@ -197,6 +197,8 @@ void Scene::loadScene()
 	_pixels = new pixel[n];
 	_RES.x = (float)_width;
 	_RES.y = (float)_height;
+	
+	//std::thread first([=](){partialSceneCalculation(0, 0, _RES.x, _RES.y); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 
 	std::thread first([=](){partialSceneCalculation(0, 0, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
 
@@ -243,7 +245,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	glm::vec3 res = glm::vec3(0.0);
 	bool similar = true;
 
-	if (iter >= 4){
+	if (iter >= 0){
 		res.r = (c[0].r + c[1].r + c[2].r + c[3].r) / 4;
 		res.g = (c[0].g + c[1].g + c[2].g + c[3].g) / 4;
 		res.b = (c[0].b + c[1].b + c[2].b + c[3].b) / 4;

@@ -4,6 +4,7 @@
 #include "Cell.h"
 #include "BoundingBox.h"
 #include "NotObjects.h"
+#include "Plane.h"
 
 class Grid : public NotObjects
 {

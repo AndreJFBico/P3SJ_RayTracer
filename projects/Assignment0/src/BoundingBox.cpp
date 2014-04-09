@@ -55,6 +55,7 @@ intersectVal BoundingBox::intersect(Ray *r)
 	_tmin = r->origin + r->direction*tmin;
 	_tmax = r->origin + r->direction*tmax;
 	_tminf = tmin;
+	r->t = t;
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 	

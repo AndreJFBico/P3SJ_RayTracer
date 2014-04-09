@@ -14,6 +14,8 @@ intersectVal Plane::intersect(Ray *r)
 	r->intersectPoint = r->origin + r->direction*d;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 
+	r->t = d;
+
 	if (d>0)
 		return intersectVal(true, this);
 

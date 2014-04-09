@@ -14,6 +14,7 @@ public:
 	bool insideGrid;
 	float refractionIndex;
 	bool intersectedGrid;
+	float t;
 
 	Ray();
 

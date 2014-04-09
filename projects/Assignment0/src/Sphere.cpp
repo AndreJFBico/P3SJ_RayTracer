@@ -47,7 +47,7 @@ intersectVal Sphere::intersect(Ray *r)
 
 			t = t0;
 		}
-
+		r->t = t;
 		r->intersectPoint = r->origin + r->direction*t;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
 		return intersectVal(true, this);
