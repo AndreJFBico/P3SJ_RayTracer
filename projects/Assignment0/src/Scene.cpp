@@ -27,27 +27,49 @@ void Scene::loadNFF(std::string fpath)
 	genAreaLightPlanes();
 }
 
-void Scene::loadObj(std::string fpath)
+void Scene::loadObj(std::string fpath, bool triangulated)
 {
 	PieceReader::getInstance().init();
 	//PieceReader::getInstance().clearAll();
-	PieceReader::getInstance().readObject(fpath);
+	PieceReader::getInstance().readObject(fpath, triangulated);
 	std::vector<Vertex> v = PieceReader::getInstance().getVertices();
 	
-	for (int i = 0; i < v.size(); i += 3)
+	if (triangulated)
 	{
-		Triangle *p = new Triangle();
-		p->_id = 0;
-		p->_Kd = 0.9f;
-		p->_Ks = 0.6f;
-		p->_Shine = 30;
-		p->_refract_index = 0;
-		p->_T = 0;
-		p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
-		p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
-		p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
-		p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
-		_geometry.push_back(p);
+		for (int i = 0; i < v.size(); i += 3)
+		{
+			Triangle *p = new Triangle();
+			p->_id = 0;
+			p->_Kd = 0.9f;
+			p->_Ks = 0.6f;
+			p->_Shine = 30;
+			p->_refract_index = 0;
+			p->_T = 0;
+			p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
+			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
+			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
+			p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
+			_geometry.push_back(p);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < v.size(); i += 4)
+		{
+			Quad *p = new Quad();
+			p->_id = 0;
+			p->_Kd = 0.9f;
+			p->_Ks = 0.6f;
+			p->_Shine = 30;
+			p->_refract_index = 0;
+			p->_T = 0;
+			p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
+			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
+			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
+			p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
+			p->_vertexes.push_back(glm::vec3(v.at(i + 3).XYZW));
+			_geometry.push_back(p);
+		}
 	}
 }
 
@@ -150,8 +172,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 				//_colors[3] = trace(_geometry, ray, 0, false);
 
 				glm::vec3 finalColor = glm::vec3(0.0);
-				finalColor = monteCarloSampling(x, y, _colors, 0, e);
-
+				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) /4.0f;
 				//glm::vec3 finalColor = depthOfField(ray);
 
 				_pixels[currentpixel].RGB.r = finalColor.r;
@@ -186,8 +208,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 				//_colors[3] = trace(_geometry, ray, 0, false);
 
 				glm::vec3 finalColor = glm::vec3(0.0);
-				finalColor = monteCarloSampling(x, y, _colors, 0, e);
-
+				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
 				//glm::vec3 finalColor = depthOfField(ray);
 
 				_pixels[currentpixel].RGB.r = finalColor.r;
@@ -222,8 +244,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 				//_colors[3] = trace(_geometry, ray, 0, false);
 
 				glm::vec3 finalColor = glm::vec3(0.0);
-				finalColor = monteCarloSampling(x, y, _colors, 0, e);
-
+				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
 				//glm::vec3 finalColor = depthOfField(ray);
 
 				_pixels[currentpixel].RGB.r = finalColor.r;
@@ -258,8 +280,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 				//_colors[3] = trace(_geometry, ray, 0, false);
 
 				glm::vec3 finalColor = glm::vec3(0.0);
-				finalColor = monteCarloSampling(x, y, _colors, 0, e);
-
+				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
 				//glm::vec3 finalColor = depthOfField(ray);
 
 				_pixels[currentpixel].RGB.r = finalColor.r;
@@ -489,7 +511,7 @@ void checkColisionOfShadowRays(std::vector<NotObjects*> planesnGrid, std::vector
 }
 
 void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
-							std::vector<lightRays>* lightsOfSF, std::vector<light> lights,
+							std::vector<lightRays> &lightsOfSF, std::vector<light> lights,
 							bool refracted, glm::vec3 closestintersect, std::vector<NotObjects*> planesnGrid, Twister *t)
 {
 	int j = 0;
@@ -553,7 +575,7 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 			}
 		if (!rays_pos.empty())
 		{
-			lightsOfSF->push_back(lightRays(j, rays_pos));
+			lightsOfSF.push_back(lightRays(j, rays_pos));
 			checkColisionOfShadowRays(planesnGrid, shadowfillers);
 		}
 		j++;
@@ -561,14 +583,14 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 }
 
 void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, glm::vec3 normal,
-						std::vector<lightRays>* lightsOfSF, std::vector<light> lights,
+						std::vector<lightRays> &lightsOfSF, std::vector<light> lights,
 						glm::vec3 closestintersect, Ray* ray, Geometry* nearest)
 {
 	
 	for (unsigned int i = 0; i < lights.size(); i++)
 	{
 		std::vector<rayPos> rays_pos;
-		for (std::vector<lightRays>::iterator it = lightsOfSF->begin(); it != lightsOfSF->end(); it++)
+		for (std::vector<lightRays>::iterator it = lightsOfSF.begin(); it != lightsOfSF.end(); it++)
 		{
 			if (i == (*it).l)
 			{
@@ -690,7 +712,7 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 
 	std::vector<Ray*> _shadowfillers;
 	glm::vec3 normal = nearest->calculateNormal(ray);
-	std::vector<lightRays>* _lightsofSF = new std::vector<lightRays>;
+	std::vector<lightRays> _lightsofSF;
 	glm::vec3 lightComp = glm::vec3(0.0);
 
 	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
@@ -704,11 +726,15 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 	}
 	std::vector<Ray*>().swap(_shadowfillers);
 
-	for (std::vector<lightRays>::iterator it = _lightsofSF->begin(); it != _lightsofSF->end(); it++)
+	for (std::vector<lightRays>::iterator it = _lightsofSF.begin(); it != _lightsofSF.end(); it++)
 	{
+		/*for each (rayPos v in (*it).rays)
+		{
+			delete(v.ray);
+		}*/
 		std::vector<rayPos>().swap(it->rays);
 	}
-	std::vector<lightRays>().swap(*_lightsofSF);
+	std::vector<lightRays>().swap(_lightsofSF);
 
 	if (depth >= _maxDepth) return lightComp;
 
@@ -731,6 +757,7 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 			rColor = trace(planesnGrid, rRay, depth + 1, refracted);
 			lightComp = rColor* nearest->_Ks + lightComp;
 		}	
+		delete(rRay);
 	}
 
 	//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -749,7 +776,7 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 			tRay = ray->refract(normal, nearest->_refract_index);
 			tColor = trace(planesnGrid, tRay, depth + 1, true);
 		}
-		
+		delete(tRay);
 		lightComp = tColor* nearest->_T/1.1f + lightComp;
 	}
 

@@ -7,6 +7,7 @@
 #include "NFFLoader.h"
 #include "OutConverter.h"
 #include "Ray.h"
+#include "Quad.h"
 #include "PieceReader.h"
 #include "Vertex.h"
 #include "Grid.h"
@@ -51,7 +52,7 @@ public:
 	Scene();
 
 	void loadNFF(std::string filename);
-	void loadObj(std::string fpath);
+	void loadObj(std::string fpath, bool triangulated);
 
 	void partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter);
 	void loadScene();
