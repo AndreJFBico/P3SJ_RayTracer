@@ -38,12 +38,12 @@ void Scene::loadObj(std::string fpath)
 	{
 		Triangle *p = new Triangle();
 		p->_id = 0;
-		p->_Kd = 1;
-		p->_Ks = 0.3f;
-		p->_Shine = 10;
+		p->_Kd = 0.9f;
+		p->_Ks = 0.6f;
+		p->_Shine = 30;
 		p->_refract_index = 0;
 		p->_T = 0;
-		p->_RGB = glm::vec3(0.0, 0.0, 1.0f);
+		p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
 		p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 		p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
 		p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
