@@ -23,6 +23,7 @@
     <ClCompile Include="..\src\OutConverter.cpp" />
     <ClCompile Include="..\src\PieceReader.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
+    <ClCompile Include="..\src\Quad.cpp" />
     <ClCompile Include="..\src\Ray.cpp" />
     <ClCompile Include="..\src\Scene.cpp" />
     <ClCompile Include="..\src\Sphere.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\src\OutConverter.h" />
     <ClInclude Include="..\src\PieceReader.h" />
     <ClInclude Include="..\src\Plane.h" />
+    <ClInclude Include="..\src\Quad.h" />
     <ClInclude Include="..\src\Ray.h" />
     <ClInclude Include="..\src\Scene.h" />
     <ClInclude Include="..\src\Sphere.h" />

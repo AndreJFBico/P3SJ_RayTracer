@@ -19,7 +19,7 @@ intersectVal Triangle::intersect(Ray *r)
 		return intersectVal(false, NULL);
 
 
-	int i0, i1, i2;
+	int i0 = 0, i1 = 0, i2 = 0;
 	//Calculating indices.
 	if (normal.x > normal.y && normal.x > normal.z)
 	{

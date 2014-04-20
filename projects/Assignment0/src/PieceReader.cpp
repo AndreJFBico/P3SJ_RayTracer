@@ -5,7 +5,7 @@ void PieceReader::init()
 	hasTex = false;
 }
 
-void PieceReader::readObject(std::string fpath)
+void PieceReader::readObject(std::string fpath, bool triangulated)
 {
 	vertices = new std::vector<Vertex>();
 	indices = new std::vector<unsigned int>();
@@ -39,7 +39,7 @@ void PieceReader::readObject(std::string fpath)
 		}
 		else if (line.substr(0, 2) == "f ") {
 			std::istringstream s(line.substr(2));
-			unsigned short int a, b, c;
+			unsigned short int a, b, c, d;
 			Vertex v;
 
 			s >> a;
@@ -102,10 +102,36 @@ void PieceReader::readObject(std::string fpath)
 			s >> c;
 			c--;
 			v.NORMAL = normals->at(c);
+			vertices->push_back(v);
 
+			if (!triangulated)
+			{
+				s.ignore(256, ' ');
+				s >> d;
+				d--;
+				v.XYZW = verts->at(d);
+				indices->push_back(k++);
+				v.RGBA = glm::vec4(1.0f);
+
+				s.ignore(256, '/');
+				if (s.peek() != '/')
+				{
+					s >> d;
+					d--;
+					v.UV = text->at(d);
+				}
+
+				s.ignore(256, '/');
+				s >> d;
+				d--;
+				v.NORMAL = normals->at(d);
+
+				s.ignore(256, ' ');
+				v.TANG = glm::vec4(0.0, 0.0, 0.0, 0.0);
+				vertices->push_back(v);
+			}
 			s.ignore(256, ' ');
 			v.TANG = glm::vec4(0.0, 0.0, 0.0, 0.0);
-			vertices->push_back(v);
 		}
 		else if (line[0] == '#') { /* ignoring this line */ }
 		else { /* ignoring this line */ }

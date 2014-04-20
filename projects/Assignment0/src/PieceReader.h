@@ -12,6 +12,7 @@ class PieceReader
 	PieceReader(PieceReader const&);
 
 public:
+
 	static PieceReader& getInstance()
 	{
 		static PieceReader instance;
@@ -20,7 +21,7 @@ public:
 
 	void init();
 
-	void readObject(std::string fpath);
+	void readObject(std::string fpath, bool triangulated);
 
 	std::vector<Vertex> getVertices();
 	std::vector<unsigned int> getIndices();
