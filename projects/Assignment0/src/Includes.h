@@ -29,9 +29,9 @@ const glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 #define HUGE_VALUE 10000000
 #define SMALL_VALUE 0.000000001
 #define KEPSILON 0.001
-#define FOCAL_LENGTH 2.5f
-#define DEPTH_RAYS 1
-#define LENS_SIZE 0.001f
+#define FOCAL_LENGTH 2.8f
+#define DEPTH_RAYS 6
+#define LENS_SIZE 0.1f
 
 struct pixel
 {

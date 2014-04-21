@@ -3,24 +3,25 @@
 Grid::Grid(int m)
 {
 	_mFactor = m;
+	_bbox = new BoundingBox();
 }
 
 void Grid::computeBbox(std::vector<Geometry*> objs)
 {
 	_numObjects = objs.size();
-	BoundingBox objBbox;
+	BoundingBox* objBbox;
 	glm::vec3 p0 = glm::vec3(HUGE_VALUE);
 	glm::vec3 p1 = glm::vec3(SMALL_VALUE);
 	
 	for (int i = 0; i < _numObjects; i++){
 		objBbox = objs[i]->getBBox();
 
-		if(objBbox.min.x < p0.x)
-			p0.x = objBbox.min.x;
-		if(objBbox.min.y < p0.y)
-			p0.y = objBbox.min.y;
-		if(objBbox.min.z < p0.z)
-			p0.z = objBbox.min.z;
+		if(objBbox->min.x < p0.x)
+			p0.x = objBbox->min.x;
+		if(objBbox->min.y < p0.y)
+			p0.y = objBbox->min.y;
+		if(objBbox->min.z < p0.z)
+			p0.z = objBbox->min.z;
 	}
 
 	p0.x -= KEPSILON; p0.y -= KEPSILON; p0.z -= KEPSILON;
@@ -29,24 +30,24 @@ void Grid::computeBbox(std::vector<Geometry*> objs)
 	for (int i = 0; i < _numObjects; i++){
 		objBbox = objs[i]->getBBox();
 
-		if(objBbox.max.x > p1.x)
-			p1.x = objBbox.max.x;
-		if(objBbox.max.y > p1.y)
-			p1.y = objBbox.max.y;
-		if(objBbox.max.z > p1.z)
-			p1.z = objBbox.max.z;
+		if(objBbox->max.x > p1.x)
+			p1.x = objBbox->max.x;
+		if(objBbox->max.y > p1.y)
+			p1.y = objBbox->max.y;
+		if(objBbox->max.z > p1.z)
+			p1.z = objBbox->max.z;
 	}
 
 	p1.x += KEPSILON; p1.y += KEPSILON; p1.z += KEPSILON;
-	objBbox.min = p0;
-	objBbox.max = p1;
+	objBbox->min = p0;
+	objBbox->max = p1;
 
 	_bbox = objBbox;
 }
 
 void Grid::cellsSetup()
 {
-	glm::vec3 w = _bbox.max - _bbox.min;
+	glm::vec3 w = _bbox->max - _bbox->min;
 	float s = cbrt(w.x * w.y * w.z / _numObjects);
 	_nx = _mFactor*w.x / s + 1;
 	_ny = _mFactor*w.y / s + 1;
@@ -74,12 +75,12 @@ void Grid::cellObjectAttribution(std::vector<Geometry*> geo)
 		//Cell c1 = _cells[getCellArrayIndex(g->getBBox().min.x, g->getBBox().min.y, g->getBBox().min.z)];
 		//Cell c2 = _cells[getCellArrayIndex(g->getBBox().max.x, g->getBBox().max.y, g->getBBox().max.z)];
 
-		int ixmin = clamp((g->_boundingBox.min.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
-		int iymin = clamp((g->_boundingBox.min.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
-		int izmin = clamp((g->_boundingBox.min.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
-		int ixmax = clamp((g->_boundingBox.max.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
-		int iymax = clamp((g->_boundingBox.max.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
-		int izmax = clamp((g->_boundingBox.max.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
+		int ixmin = clamp((g->_boundingBox->min.x - _bbox->min.x) * _nx / (_bbox->max.x - _bbox->min.x), 0, _nx - 1);
+		int iymin = clamp((g->_boundingBox->min.y - _bbox->min.y) * _ny / (_bbox->max.y - _bbox->min.y), 0, _ny - 1);
+		int izmin = clamp((g->_boundingBox->min.z - _bbox->min.z) * _nz / (_bbox->max.z - _bbox->min.z), 0, _nz - 1);
+		int ixmax = clamp((g->_boundingBox->max.x - _bbox->min.x) * _nx / (_bbox->max.x - _bbox->min.x), 0, _nx - 1);
+		int iymax = clamp((g->_boundingBox->max.y - _bbox->min.y) * _ny / (_bbox->max.y - _bbox->min.y), 0, _ny - 1);
+		int izmax = clamp((g->_boundingBox->max.z - _bbox->min.z) * _nz / (_bbox->max.z - _bbox->min.z), 0, _nz - 1);
 
 		/*int temp = 0;
 		if (ixmin > ixmax) temp = ixmin, ixmin = ixmax, ixmax = temp;
@@ -101,20 +102,20 @@ intersectVal Grid::intersect(Ray* r)
 {
 	int ix, iy, iz;
 
-	if (!(_bbox.intersect(r).intersected))
+	if (!(_bbox->intersect(r).intersected))
 		return intersectVal(false, NULL);
 	r->intersectedGrid = true;
-	if (_bbox._tminf < 0)
+	if (_bbox->_tminf < 0)
 		r->insideGrid = true;
 	if (r->insideGrid){
-		ix = clamp((r->origin.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
-		iy = clamp((r->origin.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
-		iz = clamp((r->origin.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
+		ix = clamp((r->origin.x - _bbox->min.x) * _nx / (_bbox->max.x - _bbox->min.x), 0, _nx - 1);
+		iy = clamp((r->origin.y - _bbox->min.y) * _ny / (_bbox->max.y - _bbox->min.y), 0, _ny - 1);
+		iz = clamp((r->origin.z - _bbox->min.z) * _nz / (_bbox->max.z - _bbox->min.z), 0, _nz - 1);
 	}
 	else{
-		ix = clamp((r->intersectPoint.x - _bbox.min.x) * _nx / (_bbox.max.x - _bbox.min.x), 0, _nx - 1);
-		iy = clamp((r->intersectPoint.y - _bbox.min.y) * _ny / (_bbox.max.y - _bbox.min.y), 0, _ny - 1);
-		iz = clamp((r->intersectPoint.z - _bbox.min.z) * _nz / (_bbox.max.z - _bbox.min.z), 0, _nz - 1);
+		ix = clamp((r->intersectPoint.x - _bbox->min.x) * _nx / (_bbox->max.x - _bbox->min.x), 0, _nx - 1);
+		iy = clamp((r->intersectPoint.y - _bbox->min.y) * _ny / (_bbox->max.y - _bbox->min.y), 0, _ny - 1);
+		iz = clamp((r->intersectPoint.z - _bbox->min.z) * _nz / (_bbox->max.z - _bbox->min.z), 0, _nz - 1);
 	}
 	
 	std::vector<Geometry*> intersected = gridTraversal(ix, iy, iz, r);
@@ -155,94 +156,92 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 {
 	//std::vector<Geometry*> intersected;
 	Ray aux = *r;
-	Plane* pl;
+	Plane& pl = Plane();
 
 	int justOutX = _nx;
 	int justOutY = _ny;
 	int justOutZ = _nz;
 
-	float tDeltaX = (_bbox.max.x - _bbox.min.x) / _nx;
-	float tDeltaY = (_bbox.max.y - _bbox.min.y) / _ny;
-	float tDeltaZ = (_bbox.max.z - _bbox.min.z) / _nz;
+	float tDeltaX = (_bbox->max.x - _bbox->min.x) / _nx;
+	float tDeltaY = (_bbox->max.y - _bbox->min.y) / _ny;
+	float tDeltaZ = (_bbox->max.z - _bbox->min.z) / _nz;
 
-	float tx_next = _bbox.min.x + (ix + 1) * tDeltaX;
-	float ty_next = _bbox.min.y + (iy + 1) * tDeltaY;
-	float tz_next = _bbox.min.z + (iz + 1) * tDeltaZ;
-	float tx_extra = _bbox.min.x + (ix + 2) * tDeltaX;
-	float ty_extra = _bbox.min.y + (iy + 2) * tDeltaY;
-	float tz_extra = _bbox.min.z + (iz + 2) * tDeltaZ;
+	float tx_next = _bbox->min.x + (ix + 1) * tDeltaX;
+	float ty_next = _bbox->min.y + (iy + 1) * tDeltaY;
+	float tz_next = _bbox->min.z + (iz + 1) * tDeltaZ;
+	float tx_extra = _bbox->min.x + (ix + 2) * tDeltaX;
+	float ty_extra = _bbox->min.y + (iy + 2) * tDeltaY;
+	float tz_extra = _bbox->min.z + (iz + 2) * tDeltaZ;
 
 	int stepX = 1;
 	int stepY = 1;
 	int stepZ = 1;
 
 	if (r->direction.x < 0){
-		tx_next = _bbox.min.x + ix * tDeltaX;
-		tx_extra = _bbox.min.x + (ix + 1) * tDeltaX;
+		tx_next = _bbox->min.x + ix * tDeltaX;
+		tx_extra = _bbox->min.x + (ix + 1) * tDeltaX;
 		stepX = -1;
 	}
 	if (r->direction.y < 0){
-		ty_next = _bbox.min.y + iy * tDeltaY;
-		ty_extra = _bbox.min.y + (iy + 1) * tDeltaY;
+		ty_next = _bbox->min.y + iy * tDeltaY;
+		ty_extra = _bbox->min.y + (iy + 1) * tDeltaY;
 		stepY = -1;
 	}
 	if (r->direction.z < 0){
-		tz_next = _bbox.min.z + iz * tDeltaZ;
-		tz_extra = _bbox.min.z + (iz + 1) * tDeltaZ;
+		tz_next = _bbox->min.z + iz * tDeltaZ;
+		tz_extra = _bbox->min.z + (iz + 1) * tDeltaZ;
 		stepZ = -1;
 	}
 
-	pl = new Plane();
 
-	pl->_vertexes.push_back(glm::vec3(tx_next, 1, 1));
-	pl->_vertexes.push_back(glm::vec3(tx_next, -2, 3));
-	pl->_vertexes.push_back(glm::vec3(tx_next, 3, -5));
+	pl._vertexes.push_back(glm::vec3(tx_next, 1, 1));
+	pl._vertexes.push_back(glm::vec3(tx_next, -2, 3));
+	pl._vertexes.push_back(glm::vec3(tx_next, 3, -5));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tMaxX = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	pl->_vertexes.push_back(glm::vec3(1, ty_next, 1));
-	pl->_vertexes.push_back(glm::vec3(-2, ty_next, 3));
-	pl->_vertexes.push_back(glm::vec3(3, ty_next, -5));
+	pl._vertexes.push_back(glm::vec3(1, ty_next, 1));
+	pl._vertexes.push_back(glm::vec3(-2, ty_next, 3));
+	pl._vertexes.push_back(glm::vec3(3, ty_next, -5));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tMaxY = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	pl->_vertexes.push_back(glm::vec3(1, 1, tz_next));
-	pl->_vertexes.push_back(glm::vec3(-2, 3, tz_next));
-	pl->_vertexes.push_back(glm::vec3(3, -5, tz_next));
+	pl._vertexes.push_back(glm::vec3(1, 1, tz_next));
+	pl._vertexes.push_back(glm::vec3(-2, 3, tz_next));
+	pl._vertexes.push_back(glm::vec3(3, -5, tz_next));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tMaxZ = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	pl->_vertexes.push_back(glm::vec3(tx_extra, 1, 1));
-	pl->_vertexes.push_back(glm::vec3(tx_extra, -2, 3));
-	pl->_vertexes.push_back(glm::vec3(tx_extra, 3, -5));
+	pl._vertexes.push_back(glm::vec3(tx_extra, 1, 1));
+	pl._vertexes.push_back(glm::vec3(tx_extra, -2, 3));
+	pl._vertexes.push_back(glm::vec3(tx_extra, 3, -5));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tExtraX = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	pl->_vertexes.push_back(glm::vec3(1, ty_extra, 1));
-	pl->_vertexes.push_back(glm::vec3(-2, ty_extra, 3));
-	pl->_vertexes.push_back(glm::vec3(3, ty_extra, -5));
+	pl._vertexes.push_back(glm::vec3(1, ty_extra, 1));
+	pl._vertexes.push_back(glm::vec3(-2, ty_extra, 3));
+	pl._vertexes.push_back(glm::vec3(3, ty_extra, -5));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tExtraY = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	pl->_vertexes.push_back(glm::vec3(1, 1, tz_extra));
-	pl->_vertexes.push_back(glm::vec3(-2, 3, tz_extra));
-	pl->_vertexes.push_back(glm::vec3(3, -5, tz_extra));
+	pl._vertexes.push_back(glm::vec3(1, 1, tz_extra));
+	pl._vertexes.push_back(glm::vec3(-2, 3, tz_extra));
+	pl._vertexes.push_back(glm::vec3(3, -5, tz_extra));
 
-	pl->intersect(&aux);
+	pl.intersect(&aux);
 	float tExtraZ = aux.t;
-	pl->_vertexes.clear();
+	pl._vertexes.clear();
 
-	delete(pl);
 	
 	float dtx = fabs(tExtraX - tMaxX);
 	float dty = fabs(tExtraY - tMaxY);
@@ -383,4 +382,9 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 	}
 	
 	return(intersected);*/
+}
+
+Grid::~Grid()
+{
+	delete _bbox;
 }

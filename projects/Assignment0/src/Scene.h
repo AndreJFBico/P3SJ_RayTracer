@@ -73,4 +73,3 @@ public:
 	int getDpi(){ return _dpi; }
 
 };
-

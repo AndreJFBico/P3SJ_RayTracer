@@ -2,7 +2,6 @@
 
 Quad::Quad() : Geometry()
 {
-	_boundingBox = *(new BoundingBox());
 }
 
 intersectVal Quad::intersect(Ray *r)
@@ -146,6 +145,6 @@ void Quad::computeBoundingBox()
 			localmax.z = vertex.z;
 
 	}
-	_boundingBox.min = localmin;
-	_boundingBox.max = localmax;
+	_boundingBox->min = localmin;
+	_boundingBox->max = localmax;
 }

@@ -18,12 +18,15 @@ public:
 	float _refract_index;
 	float _id;
 
-	BoundingBox _boundingBox;
+	BoundingBox* _boundingBox;
 
 	Geometry();
 
-	BoundingBox getBBox(){ return _boundingBox; }
+	BoundingBox* getBBox(){ return _boundingBox; }
 	virtual intersectVal intersect(Ray *r) = 0;
 	virtual glm::vec3 calculateNormal(Ray* r) = 0;
 	virtual void computeBoundingBox() = 0;
+
+
+	~Geometry();
 };

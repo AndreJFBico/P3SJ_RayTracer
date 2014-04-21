@@ -24,7 +24,10 @@ void Scene::loadNFF(std::string fpath)
 	_c = NFFLoader::getInstance().getCamera();
 	_geometry = NFFLoader::getInstance().getGeometry();
 	_planesnGrid = NFFLoader::getInstance().getPlanes();
-	genAreaLightPlanes();
+	genAreaLightPlanes(); 
+
+	//std::cout << "loadNFF" << std::endl;
+	//std::cin.ignore(1);
 }
 
 void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS)
@@ -71,6 +74,9 @@ void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float K
 			_geometry.push_back(p);
 		}
 	}
+
+	//std::cout << "loadObj" << std::endl;
+	//std::cin.ignore(1);
 }
 
 float RandomFloat(float a, float b) {
@@ -78,6 +84,9 @@ float RandomFloat(float a, float b) {
 	float diff = b - a;
 	float r = random * diff;
 	return a + r;
+
+	//std::cout << "RandomFloat" << std::endl;
+	//std::cin.ignore(1);
 }
 
 glm::vec3 Scene::depthOfField(Ray * ray)
@@ -109,6 +118,9 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 		pixelColors += pixelColor;
 	}
 	return (pixelColors / ((float)DEPTH_RAYS));
+
+	//std::cout << "depthOfField" << std::endl;
+	//std::cin.ignore(1);
 }
 
 /*void Scene::depthOfField(Ray * ray)
@@ -182,6 +194,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 
 			}
 		}
+		//std::cout << "case1" << std::endl;
+		//std::cin.ignore(1);
 		break;
 	case 2:
 		for (int y = initY; y > initY - endY; y--)
@@ -218,6 +232,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 
 			}
 		}
+		//std::cout << "case2" << std::endl;
+		//std::cin.ignore(1);
 		break;
 	case 3:
 		for (int y = initY; y < initY + endY; y++)
@@ -254,6 +270,8 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 
 			}
 		}
+		//std::cout << "case3" << std::endl;
+		//std::cin.ignore(1);
 		break;
 	case 4 :
 		for (int y = initY; y < initY + endY; y++)
@@ -290,8 +308,12 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 
 			}
 		}
+		//std::cout << "case4" << std::endl;
+		//std::cin.ignore(1);
 		break;
 	default:
+		//std::cout << "case5" << std::endl;
+		//std::cin.ignore(1);
 		break;
 	}
 	
@@ -306,6 +328,9 @@ void Scene::genAreaLightPlanes()
 		_lights[i].xdir = glm::vec3(1.0f, 0.0f, 0.0f);
 		_lights[i].ydir = glm::vec3(0.0f, 1.0f, 0.0f);
 	}
+
+	//std::cout << "genAreaLightPlanes" << std::endl;
+	//std::cin.ignore(1);
 }
 
 void Scene::computeObjsBB()
@@ -314,12 +339,14 @@ void Scene::computeObjsBB()
 	{
 		g->computeBoundingBox();
 	}
+	//std::cout << "computeObjsBB" << std::endl;
+	//std::cin.ignore(1);
 }
 
 void Scene::loadScene()
 {
-	std::cout << std::thread::hardware_concurrency() << std::endl;
-	std::cout << "rendering ..." << std::endl;
+	//std::cout << std::thread::hardware_concurrency() << std::endl;
+	//std::cout << "rendering ..." << std::endl;
 
 	computeObjsBB();
 	if (_geometry.size() > 0)
@@ -366,8 +393,10 @@ void Scene::loadScene()
 	seventh.join();
 	eighth.join();
 	/**/
-	std::cout << "ended rendering ..." << std::endl;
+	//std::cout << "ended rendering ..." << std::endl;
 
+	//std::cout << "loadScene" << std::endl;
+	//std::cin.ignore(1);
 }
 
 glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int epsilon){
@@ -464,9 +493,11 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 		res.g = (cor1.g + cor2.g + cor3.g + cor4.g) / 4;
 		res.b = (cor1.b + cor2.b + cor3.b + cor4.b) / 4;
 	
-}
+	}
 	delete _r;
 	return res;
+	//std::cout << "monteCarloSampling" << std::endl;
+	//std::cin.ignore(1);
 };
 
 glm::vec3 calculateRayObjectIntersection(std::vector<NotObjects*> planesnGrid, Ray*& ray, Geometry*& nearest)
@@ -491,6 +522,8 @@ glm::vec3 calculateRayObjectIntersection(std::vector<NotObjects*> planesnGrid, R
 	ray->intersectPoint = closestintersect;
 	ray->dToObject = prevD2Obj;
 
+	//std::cout << "calculateRayObjectIntersection" << std::endl;
+	//std::cin.ignore(1);
 	return closestintersect;
 }
 
@@ -508,6 +541,8 @@ void checkColisionOfShadowRays(std::vector<NotObjects*> planesnGrid, std::vector
 			}
 		}
 	}
+	//std::cout << "checkColisionOfShadowRays" << std::endl;
+	//std::cin.ignore(1);
 }
 
 void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
@@ -580,11 +615,13 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 		}
 		j++;
 	}
+	//std::cout << "calculateShadowFillers" << std::endl;
+	//std::cin.ignore(1);
 }
 
 void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, glm::vec3 normal,
 						std::vector<lightRays> &lightsOfSF, std::vector<light> lights,
-						glm::vec3 closestintersect, Ray* ray, Geometry* nearest)
+						glm::vec3 closestintersect, Ray*& ray, Geometry*& nearest)
 {
 	
 	for (unsigned int i = 0; i < lights.size(); i++)
@@ -645,7 +682,11 @@ void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, 
 				break;
 			}	
 		}
+		rays_pos.clear();
+		std::vector<rayPos>().swap(rays_pos);
 	}
+	//std::cout << "calculateLocalColor" << std::endl;
+	//std::cin.ignore(1);
 	/*glm::vec2 LightAttenuation = glm::vec2(0.0f, 0.00000f);
 	int i = 0;
 	for (Ray* sf : shadowfillers){
@@ -784,6 +825,9 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 	lightComp.r = fmin(fmax(lightComp.r, 0.0f), 1.0f);
 	lightComp.g = fmin(fmax(lightComp.g, 0.0f), 1.0f);
 	lightComp.b = fmin(fmax(lightComp.b, 0.0f), 1.0f);
+
+	//std::cout << "Trace" << std::endl;
+	//std::cin.ignore(1);
 	
 	return lightComp;
 }

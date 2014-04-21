@@ -18,4 +18,6 @@ public:
 	void computeBoundingBox();
 
 	intersectVal intersect(Ray *r);
+
+	~Plane();
 };

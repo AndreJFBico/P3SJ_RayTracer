@@ -2,7 +2,6 @@
 
 Triangle::Triangle() : Geometry()
 {
-	_boundingBox = *(new BoundingBox());
 }
 
 intersectVal Triangle::intersect(Ray *r)
@@ -110,6 +109,6 @@ void Triangle::computeBoundingBox()
 				localmax.z = vertex.z;
 
 	}
-	_boundingBox.min = localmin;
-	_boundingBox.max = localmax;
+	_boundingBox->min = localmin;
+	_boundingBox->max = localmax;
 }

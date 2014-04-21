@@ -9,7 +9,7 @@
 class Grid : public NotObjects
 {
 	std::vector<Cell*> _cells;
-	BoundingBox _bbox;
+	BoundingBox* _bbox;
 	int _numCells, _numObjects, _mFactor;
 	int _nx, _ny, _nz;
 
@@ -26,6 +26,8 @@ class Grid : public NotObjects
 		//GETTERS
 		int getNumCells(){ return _numCells; }
 		std::vector<Cell*> getCells(){ return _cells; }
-		BoundingBox getBbox(){ return _bbox; }
+		BoundingBox* getBbox(){ return _bbox; }
+
+		~Grid();
 
 };
