@@ -166,28 +166,31 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 	float tDeltaZ = (_bbox.max.z - _bbox.min.z) / _nz;
 
 	float tx_next = _bbox.min.x + (ix + 1) * tDeltaX;
-	if (r->direction.x < 0)
-		tx_next = _bbox.min.x + ix * tDeltaX;
-
 	float ty_next = _bbox.min.y + (iy + 1) * tDeltaY;
-	if (r->direction.y < 0)
-		ty_next = _bbox.min.y + iy * tDeltaY;
-
 	float tz_next = _bbox.min.z + (iz + 1) * tDeltaZ;
-	if (r->direction.z < 0)
-		tz_next = _bbox.min.z + iz * tDeltaZ;
-
 	float tx_extra = _bbox.min.x + (ix + 2) * tDeltaX;
-	if (r->direction.x < 0)
-		tx_extra = _bbox.min.x + (ix + 1) * tDeltaX;
-
 	float ty_extra = _bbox.min.y + (iy + 2) * tDeltaY;
-	if (r->direction.y < 0)
-		ty_extra = _bbox.min.y + (iy + 1) * tDeltaY;
-
 	float tz_extra = _bbox.min.z + (iz + 2) * tDeltaZ;
-	if (r->direction.z < 0)
+
+	int stepX = 1;
+	int stepY = 1;
+	int stepZ = 1;
+
+	if (r->direction.x < 0){
+		tx_next = _bbox.min.x + ix * tDeltaX;
+		tx_extra = _bbox.min.x + (ix + 1) * tDeltaX;
+		stepX = -1;
+	}
+	if (r->direction.y < 0){
+		ty_next = _bbox.min.y + iy * tDeltaY;
+		ty_extra = _bbox.min.y + (iy + 1) * tDeltaY;
+		stepY = -1;
+	}
+	if (r->direction.z < 0){
+		tz_next = _bbox.min.z + iz * tDeltaZ;
 		tz_extra = _bbox.min.z + (iz + 1) * tDeltaZ;
+		stepZ = -1;
+	}
 
 	pl = new Plane();
 
@@ -244,16 +247,6 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 	float dtx = fabs(tExtraX - tMaxX);
 	float dty = fabs(tExtraY - tMaxY);
 	float dtz = fabs(tExtraZ - tMaxZ);
-
-	int stepX = 1;
-	if (r->direction.x < 0)
-		stepX = -1;
-	int stepY = 1;
-	if (r->direction.y < 0)
-		stepY = -1;
-	int stepZ = 1;
-	if (r->direction.z < 0)
-		stepZ = -1;
 	
 	bool hit;
 	Ray ray;
