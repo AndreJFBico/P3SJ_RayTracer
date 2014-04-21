@@ -27,7 +27,7 @@ void Scene::loadNFF(std::string fpath)
 	genAreaLightPlanes();
 }
 
-void Scene::loadObj(std::string fpath, bool triangulated)
+void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS)
 {
 	PieceReader::getInstance().init();
 	//PieceReader::getInstance().clearAll();
@@ -41,11 +41,11 @@ void Scene::loadObj(std::string fpath, bool triangulated)
 			Triangle *p = new Triangle();
 			p->_id = 0;
 			p->_Kd = 0.9f;
-			p->_Ks = 0.6f;
+			p->_Ks = KS;
 			p->_Shine = 30;
 			p->_refract_index = 0;
 			p->_T = 0;
-			p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
+			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
@@ -59,11 +59,11 @@ void Scene::loadObj(std::string fpath, bool triangulated)
 			Quad *p = new Quad();
 			p->_id = 0;
 			p->_Kd = 0.9f;
-			p->_Ks = 0.6f;
+			p->_Ks = KS;
 			p->_Shine = 30;
 			p->_refract_index = 0;
 			p->_T = 0;
-			p->_RGB = glm::vec3(0.1f, 0.1f, 1.0f);
+			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 2).XYZW));
@@ -320,7 +320,7 @@ void Scene::loadScene()
 {
 	std::cout << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "rendering ..." << std::endl;
-	
+
 	computeObjsBB();
 	if (_geometry.size() > 0)
 	{
@@ -633,9 +633,9 @@ void calculateLocalColor(glm::vec3& lightComp, std::vector<Ray*> shadowfillers, 
 						shadowFillerContrib.b = (diffuse.b + specular / 2.0f) * attenuation * luz.RGB.b + shadowFillerContrib.b;
 					}
 					else{
-						shadowFillerContrib.r = fmax(shadowFillerContrib.r - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
-						shadowFillerContrib.g = fmax(shadowFillerContrib.g - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
-						shadowFillerContrib.b = fmax(shadowFillerContrib.b - (diffuse.r + specular) * attenuation * 0.1f, 0.0f);
+						shadowFillerContrib.r = fmax(shadowFillerContrib.r - (diffuse.r + specular) * attenuation * 0.3f, 0.0f);
+						shadowFillerContrib.g = fmax(shadowFillerContrib.g - (diffuse.r + specular) * attenuation * 0.3f, 0.0f);
+						shadowFillerContrib.b = fmax(shadowFillerContrib.b - (diffuse.r + specular) * attenuation * 0.3f, 0.0f);
 					}
 				}
 				shadowFillerContrib = (shadowFillerContrib / ((float)rays_pos.size()));

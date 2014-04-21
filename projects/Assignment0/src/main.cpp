@@ -10,6 +10,7 @@
 #include <stdio.h> 
 #include "Includes.h"
 #include "Scene.h" 
+#include <time.h>
 
 #define MAX_DEPTH 6 
 
@@ -65,12 +66,29 @@ int glutInitv(int argc, char**argv)
 
 void loadScene(Scene *s)
 {
-	scene->loadNFF("..\\nff\\jap.nff");
-	scene->loadObj("..\\objs\\LEET_DRAGON_FINAL.obj", true);
-	
 
+	clock_t begin, begin2, end;
+	begin = clock();
+
+	std::cout << "loading assets ..." << std::endl;
+	scene->loadNFF("..\\nff\\jap.nff");
+	//scene->loadObj("..\\objs\\LEET_DRAGON_FINAL.obj", true, glm::vec3(0.0f, 0.0f, 1.0f) , 0.0f);
+	//scene->loadObj("..\\objs\\trees_only.obj", true);
+	scene->loadObj("..\\objs\\main_terrain.obj", true, glm::vec3(204.0f / 255.0f, 102.0f / 255.0f, 51.0f / 255.0f), 0.1f);
+	scene->loadObj("..\\objs\\trees.obj", true, glm::vec3(0.077f, 0.223f, 0.03f), 0.0f);
+	scene->loadObj("..\\objs\\snow.obj", true, glm::vec3(1.0f, 1.0f, 1.0f), 0.1f);
+	scene->loadObj("..\\objs\\green.obj", true, glm::vec3(90.0f/255.0f, 118.0f/255.0f, 69.0f/255.0f), 0.1f);
+	scene->loadObj("..\\objs\\dark.obj", true, glm::vec3(204.0f / 255.0f, 102.0f / 255.0f, 51.0f / 255.0f), 0.2f);
+	scene->loadObj("..\\objs\\base.obj", false, glm::vec3(34.0f / 255.0f, 13.0f / 255.0f, 12.0f / 255.0f), 0.2f);
+	//scene->loadObj("..\\objs\\giant_tree.obj", true, glm::vec3(0.077f, 0.223f, 0.03f), 0.0f);
 	//scene->loadObj("..\\objs\\cube.obj", false);
+	std::cout << "finished loading assets ..." << std::endl;
+	begin2 = clock();
+	std::cout << "Assets loading time: " << (double)(begin2 - begin) / CLOCKS_PER_SEC;
 	scene->loadScene();
+	end = clock();
+	std::cout << "Render Time: " << (double)(end - begin2) / CLOCKS_PER_SEC;
+	std::cout << "Total Time taken: " << (double)(end - begin) / CLOCKS_PER_SEC;
 }
 
 int main(int argc, char**argv)

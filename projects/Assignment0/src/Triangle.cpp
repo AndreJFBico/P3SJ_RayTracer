@@ -72,8 +72,10 @@ intersectVal Triangle::intersect(Ray *r)
 	}
 	if (Beta >= 0.0f && Alfa >= 0.0f && (Alfa + Beta) <= 1)
 	{
+		
 		r->intersectPoint = P;
 		r->dToObject = glm::length(r->intersectPoint - r->origin);
+		r->t = d;
 		return intersectVal(true, this);
 	}
 	return intersectVal(false, NULL);

@@ -111,6 +111,7 @@ intersectVal Quad::intersect(Ray *r)
 			u = C / Q;
 		v = beta / ((u * (beta_11 - float(1.0))) + float(1.0));
 	}
+	r->t = t;
 	r->intersectPoint = r->origin + r->direction*t;
 	r->dToObject = glm::length(r->intersectPoint - r->origin);
 	return intersectVal(true, this);
