@@ -52,7 +52,7 @@ public:
 	Scene();
 
 	void loadNFF(std::string filename);
-	void loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS);
+	void loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS, float transmitance);
 
 	void partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter);
 	void loadScene();

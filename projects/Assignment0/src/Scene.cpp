@@ -30,7 +30,7 @@ void Scene::loadNFF(std::string fpath)
 	//std::cin.ignore(1);
 }
 
-void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS)
+void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS, float transmitance)
 {
 	PieceReader::getInstance().init();
 	//PieceReader::getInstance().clearAll();
@@ -46,8 +46,8 @@ void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float K
 			p->_Kd = 0.9f;
 			p->_Ks = KS;
 			p->_Shine = 30;
-			p->_refract_index = 0;
-			p->_T = 0;
+			p->_refract_index = 1.2;
+			p->_T = transmitance;
 			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
@@ -64,8 +64,8 @@ void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float K
 			p->_Kd = 0.9f;
 			p->_Ks = KS;
 			p->_Shine = 30;
-			p->_refract_index = 0;
-			p->_T = 0;
+			p->_refract_index = 1.2;
+			p->_T = transmitance;
 			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
