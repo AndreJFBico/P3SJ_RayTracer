@@ -30,7 +30,7 @@ void Scene::loadNFF(std::string fpath)
 	//std::cin.ignore(1);
 }
 
-void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS)
+void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS, float trans)
 {
 	PieceReader::getInstance().init();
 	//PieceReader::getInstance().clearAll();
@@ -46,8 +46,8 @@ void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float K
 			p->_Kd = 0.9f;
 			p->_Ks = KS;
 			p->_Shine = 30;
-			p->_refract_index = 0;
-			p->_T = 0;
+			p->_refract_index = 1.2f;
+			p->_T = trans;
 			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
@@ -64,8 +64,8 @@ void Scene::loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float K
 			p->_Kd = 0.9f;
 			p->_Ks = KS;
 			p->_Shine = 30;
-			p->_refract_index = 0;
-			p->_T = 0;
+			p->_refract_index = 1.2f;
+			p->_T = trans;
 			p->_RGB = RGB;
 			p->_vertexes.push_back(glm::vec3(v.at(i).XYZW));
 			p->_vertexes.push_back(glm::vec3(v.at(i + 1).XYZW));
@@ -98,7 +98,7 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 	glm::normalize(rayDirection);
 	float r = 1;
 	glm::vec3 pixelColors = glm::vec3(0.0f);
-	for (int di = 0; di < DEPTH_RAYS; di++)
+	for (int di = 0; di < _numDepth; di++)
 	{ // shooting DEPTH_RAYS random rays
 		float du = RandomFloat(-LENS_SIZE, LENS_SIZE);
 		float dv = RandomFloat(-LENS_SIZE, LENS_SIZE);
@@ -117,14 +117,14 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 		glm::vec3 pixelColor = trace(_planesnGrid, ray, 0, false);
 		pixelColors += pixelColor;
 	}
-	return (pixelColors / ((float)DEPTH_RAYS));
+	return (pixelColors / ((float)_numDepth));
 
 	//std::cout << "depthOfField" << std::endl;
 	//std::cin.ignore(1);
 }
 
 /*void Scene::depthOfField(Ray * ray)
-{
+{caç
 	glm::vec3 rayDirection = ray->direction;
 	glm::vec3 pointAimed = _c->_from + FOCAL_LENGTH * rayDirection;
 	//pointAimed is the position of pixel on focal plane in specified ray
@@ -149,8 +149,177 @@ glm::vec3 Scene::depthOfField(Ray * ray)
 	ray->origin = start;
 }*/
 
+//	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	++++++++++  DIFFERENT FUNCTIONS DEPENDING ON KEY  +++++++
+//	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter)
+void Scene::aliasingDOF(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 _colors[4];
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	_colors[0] = depthOfField(ray);
+	//_colors[0] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
+	_colors[1] = depthOfField(ray);
+	//_colors[1] = trace(_geometry, ray, 0, false);
+
+
+	ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
+	_colors[2] = depthOfField(ray);
+	//_colors[2] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
+	_colors[3] = depthOfField(ray);
+	//_colors[3] = trace(_geometry, ray, 0, false);
+
+	glm::vec3 finalColor = glm::vec3(0.0);
+	//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+	finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
+	//glm::vec3 finalColor = depthOfField(ray);
+
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+void Scene::monteCarloDOF(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 _colors[4];
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	_colors[0] = depthOfField(ray);
+	//_colors[0] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
+	_colors[1] = depthOfField(ray);
+	//_colors[1] = trace(_geometry, ray, 0, false);
+
+
+	ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
+	_colors[2] = depthOfField(ray);
+	//_colors[2] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
+	_colors[3] = depthOfField(ray);
+	//_colors[3] = trace(_geometry, ray, 0, false);
+
+	glm::vec3 finalColor = glm::vec3(0.0);
+	//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+	finalColor = monteCarloSamplingDOF(x, y, _colors, 0, e);
+	//glm::vec3 finalColor = depthOfField(ray);
+
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+void Scene::aliasing(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 _colors[4];
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	_colors[0] = trace(_planesnGrid, ray, 0, false);
+	//_colors[0] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
+	_colors[1] = trace(_planesnGrid, ray, 0, false);
+	//_colors[1] = trace(_geometry, ray, 0, false);
+
+
+	ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
+	_colors[2] = trace(_planesnGrid, ray, 0, false);
+	//_colors[2] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
+	_colors[3] = trace(_planesnGrid, ray, 0, false);
+	//_colors[3] = trace(_geometry, ray, 0, false);
+
+	glm::vec3 finalColor = glm::vec3(0.0);
+	//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+	finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
+	//glm::vec3 finalColor = depthOfField(ray);
+
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+void Scene::monteCarlo(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 _colors[4];
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	_colors[0] = trace(_planesnGrid, ray, 0, false);
+	//_colors[0] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
+	_colors[1] = trace(_planesnGrid, ray, 0, false);
+	//_colors[1] = trace(_geometry, ray, 0, false);
+
+
+	ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
+	_colors[2] = trace(_planesnGrid, ray, 0, false);
+	//_colors[2] = trace(_geometry, ray, 0, false);
+
+	ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
+	_colors[3] = trace(_planesnGrid, ray, 0, false);
+	//_colors[3] = trace(_geometry, ray, 0, false);
+
+	glm::vec3 finalColor = glm::vec3(0.0);
+	//finalColor = monteCarloSampling(x, y, _colors, 0, e);
+	finalColor = monteCarloSamplingDOF(x, y, _colors, 0, e);
+	//glm::vec3 finalColor = depthOfField(ray);
+
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+void Scene::traceOnly(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 finalColor;
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	finalColor = trace(_planesnGrid, ray, 0, false);
+
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+void Scene::DOFOnly(Ray* ray, int x, int y, int e)
+{
+	glm::vec3 finalColor;
+
+	int currentpixel = y*_width + x;
+
+	ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
+	finalColor = depthOfField(ray);
+	
+	_pixels[currentpixel].RGB.r = finalColor.r;
+	_pixels[currentpixel].RGB.g = finalColor.g;
+	_pixels[currentpixel].RGB.b = finalColor.b;
+}
+
+
+//	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter, int key)
 {
 	Ray* ray = new Ray();
 
@@ -164,243 +333,138 @@ void Scene::partialSceneCalculation(int initX, int initY, float endX, float endY
 		{
 			for (int x = initX; x > initX - endX; x--)
 			{
-				int currentpixel = y*_width + x;
-
-				ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
-				_colors[0] = depthOfField(ray);
-				//_colors[0] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
-				_colors[1] = depthOfField(ray);
-				//_colors[1] = trace(_geometry, ray, 0, false);
-
-
-				ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
-				_colors[2] = depthOfField(ray);
-				//_colors[2] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
-				_colors[3] = depthOfField(ray);
-				//_colors[3] = trace(_geometry, ray, 0, false);
-
-				glm::vec3 finalColor = glm::vec3(0.0);
-				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
-				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) /4.0f;
-				//glm::vec3 finalColor = depthOfField(ray);
-
-				_pixels[currentpixel].RGB.r = finalColor.r;
-				_pixels[currentpixel].RGB.g = finalColor.g;
-				_pixels[currentpixel].RGB.b = finalColor.b;
+				switch (key)
+				{
+				case 1:
+					aliasingDOF(ray, x, y, e);
+					break;
+				case 2:
+					monteCarloDOF(ray, x, y, e);
+					break;
+				case 3:
+					aliasing(ray, x, y, e);
+					break;
+				case 4:
+					monteCarlo(ray, x, y, e);
+					break;
+				case 5:
+					traceOnly(ray, x, y, e);
+					break;
+				case 6:
+					DOFOnly(ray, x, y, e);
+					break;
+				default:
+					break;
+				}
 
 			}
 		}
-		//std::cout << "case1" << std::endl;
-		//std::cin.ignore(1);
 		break;
 	case 2:
 		for (int y = initY; y > initY - endY; y--)
 		{
 			for (int x = initX; x < initX + endX; x++)
 			{
-				int currentpixel = y*_width + x;
-
-				ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
-				_colors[0] = depthOfField(ray);
-				//_colors[0] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
-				_colors[1] = depthOfField(ray);
-				//_colors[1] = trace(_geometry, ray, 0, false);
-
-
-				ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
-				_colors[2] = depthOfField(ray);
-				//_colors[2] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
-				_colors[3] = depthOfField(ray);
-				//_colors[3] = trace(_geometry, ray, 0, false);
-
-				glm::vec3 finalColor = glm::vec3(0.0);
-				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
-				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
-				//glm::vec3 finalColor = depthOfField(ray);
-
-				_pixels[currentpixel].RGB.r = finalColor.r;
-				_pixels[currentpixel].RGB.g = finalColor.g;
-				_pixels[currentpixel].RGB.b = finalColor.b;
+				switch (key)
+				{
+				case 1:
+					aliasingDOF(ray, x, y, e);
+					break;
+				case 2:
+					monteCarloDOF(ray, x, y, e);
+					break;
+				case 3:
+					aliasing(ray, x, y, e);
+					break;
+				case 4:
+					monteCarlo(ray, x, y, e);
+					break;
+				case 5:
+					traceOnly(ray, x, y, e);
+					break;
+				case 6:
+					DOFOnly(ray, x, y, e);
+					break;
+				default:
+					break;
+				}
 
 			}
 		}
-		//std::cout << "case2" << std::endl;
-		//std::cin.ignore(1);
 		break;
 	case 3:
 		for (int y = initY; y < initY + endY; y++)
 		{
 			for (int x = initX; x > initX - endX; x--)
 			{
-				int currentpixel = y*_width + x;
-
-				ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
-				_colors[0] = depthOfField(ray);
-				//_colors[0] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
-				_colors[1] = depthOfField(ray);
-				//_colors[1] = trace(_geometry, ray, 0, false);
-
-
-				ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
-				_colors[2] = depthOfField(ray);
-				//_colors[2] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
-				_colors[3] = depthOfField(ray);
-				//_colors[3] = trace(_geometry, ray, 0, false);
-
-				glm::vec3 finalColor = glm::vec3(0.0);
-				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
-				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
-				//glm::vec3 finalColor = depthOfField(ray);
-
-				_pixels[currentpixel].RGB.r = finalColor.r;
-				_pixels[currentpixel].RGB.g = finalColor.g;
-				_pixels[currentpixel].RGB.b = finalColor.b;
+				switch (key)
+				{
+				case 1:
+					aliasingDOF(ray, x, y, e);
+					break;
+				case 2:
+					monteCarloDOF(ray, x, y, e);
+					break;
+				case 3:
+					aliasing(ray, x, y, e);
+					break;
+				case 4:
+					monteCarlo(ray, x, y, e);
+					break;
+				case 5:
+					traceOnly(ray, x, y, e);
+					break;
+				case 6:
+					DOFOnly(ray, x, y, e);
+					break;
+				default:
+					break;
+				}
 
 			}
 		}
-		//std::cout << "case3" << std::endl;
-		//std::cin.ignore(1);
 		break;
 	case 4 :
 		for (int y = initY; y < initY + endY; y++)
 		{
 			for (int x = initX; x < initX + endX; x++)
 			{
-				int currentpixel = y*_width + x;
-
-				ray->calculateWCS(glm::vec2(x, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf esquerdo
-				_colors[0] = depthOfField(ray);
-				//_colors[0] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x + e, y), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto inf direito
-				_colors[1] = depthOfField(ray);
-				//_colors[1] = trace(_geometry, ray, 0, false);
-
-
-				ray->calculateWCS(glm::vec2(x + e, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup direito
-				_colors[2] = depthOfField(ray);
-				//_colors[2] = trace(_geometry, ray, 0, false);
-
-				ray->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye); //canto sup esquerdo
-				_colors[3] = depthOfField(ray);
-				//_colors[3] = trace(_geometry, ray, 0, false);
-
-				glm::vec3 finalColor = glm::vec3(0.0);
-				//finalColor = monteCarloSampling(x, y, _colors, 0, e);
-				finalColor = (_colors[0] + _colors[1] + _colors[2] + _colors[3]) / 4.0f;
-				//glm::vec3 finalColor = depthOfField(ray);
-
-				_pixels[currentpixel].RGB.r = finalColor.r;
-				_pixels[currentpixel].RGB.g = finalColor.g;
-				_pixels[currentpixel].RGB.b = finalColor.b;
+				switch (key)
+				{
+				case 1:
+					aliasingDOF(ray, x, y, e);
+					break;
+				case 2:
+					monteCarloDOF(ray, x, y, e);
+					break;
+				case 3:
+					aliasing(ray, x, y, e);
+					break;
+				case 4:
+					monteCarlo(ray, x, y, e);
+					break;
+				case 5:
+					traceOnly(ray, x, y, e);
+					break;
+				case 6:
+					DOFOnly(ray, x, y, e);
+					break;
+				default:
+					break;
+				}
 
 			}
 		}
-		//std::cout << "case4" << std::endl;
-		//std::cin.ignore(1);
 		break;
 	default:
-		//std::cout << "case5" << std::endl;
-		//std::cin.ignore(1);
 		break;
 	}
 	
 
 }
 
-void Scene::genAreaLightPlanes()
-{
-	for (unsigned int i = 0; i < _lights.size(); i++)
-	{
-		_lights[i].corner = _lights[i].XYZ - glm::vec3(A_L_X_SIZE, A_L_Y_SIZE, 0.0f);
-		_lights[i].xdir = glm::vec3(1.0f, 0.0f, 0.0f);
-		_lights[i].ydir = glm::vec3(0.0f, 1.0f, 0.0f);
-	}
+glm::vec3 Scene::monteCarloSamplingDOF(int x, int y, glm::vec3* c, int iter, int epsilon){
 
-	//std::cout << "genAreaLightPlanes" << std::endl;
-	//std::cin.ignore(1);
-}
-
-void Scene::computeObjsBB()
-{
-	for each (Geometry* g in _geometry)
-	{
-		g->computeBoundingBox();
-	}
-	//std::cout << "computeObjsBB" << std::endl;
-	//std::cin.ignore(1);
-}
-
-void Scene::loadScene()
-{
-	//std::cout << std::thread::hardware_concurrency() << std::endl;
-	//std::cout << "rendering ..." << std::endl;
-
-	computeObjsBB();
-	if (_geometry.size() > 0)
-	{
-		NotObjects* grid = new Grid(2);
-		((Grid*)grid)->computeBbox(_geometry);
-		((Grid*)grid)->cellsSetup();
-		((Grid*)grid)->cellObjectAttribution(_geometry);
-		_planesnGrid.insert(_planesnGrid.begin(), grid);
-	}
-
-	int n = _width*_height;
-	_pixels = new pixel[n];
-	_RES.x = (float)_width;
-	_RES.y = (float)_height;
-	
-	//std::thread first([=](){partialSceneCalculation(0, 0, _RES.x, _RES.y); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
-
-	std::thread first([=](){partialSceneCalculation(_RES.x - _RES.x / 2 - 1, _RES.y - _RES.y / 2 - 1, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 1); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
-
-	std::thread second([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2 - 1, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 2); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
-	std::thread third([=](){partialSceneCalculation(_RES.x - _RES.x / 2 - 1, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 3); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
-	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 4); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
-	/** /
-	std::thread fifth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
-
-	std::thread sixth([=](){partialSceneCalculation(_RES.x - _RES.x*3/4, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
-	std::thread seventh([=](){partialSceneCalculation(_RES.x - _RES.x * 3 / 4, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-
-	std::thread eighth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
-	/**/
-
-	first.join();
-	second.join();
-	third.join();
-	forth.join();
-	/** /
-	fifth.join();
-	sixth.join();
-	seventh.join();
-	eighth.join();
-	/**/
-	//std::cout << "ended rendering ..." << std::endl;
-
-	//std::cout << "loadScene" << std::endl;
-	//std::cin.ignore(1);
-}
-
-glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int epsilon){
-	
 	Ray* _r = new Ray();
 
 	float threshold = 2.7f;
@@ -412,7 +476,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 	glm::vec3 res = glm::vec3(0.0);
 	bool similar = true;
 
-	if (iter >= 0){
+	if (iter >= 4){
 		res.r = (c[0].r + c[1].r + c[2].r + c[3].r) / 4;
 		res.g = (c[0].g + c[1].g + c[2].g + c[3].g) / 4;
 		res.b = (c[0].b + c[1].b + c[2].b + c[3].b) / 4;
@@ -432,7 +496,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 			break;
 		}
 
-		}
+	}
 
 	if (similar){ //semelhantes => avg das cores
 		res.r = (c[0].r + c[1].r + c[2].r + c[3].r) / 4;
@@ -459,7 +523,7 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 		vecAux2[0] = traceColor;
 		vecAux3[1] = traceColor;
 
-		_r->calculateWCS(glm::vec2(x , y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
+		_r->calculateWCS(glm::vec2(x, y + e), _c->_at, _c->_from, _c->_up, _c->_w, _c->_h, _c->_Ze, _c->_Xe, _c->_Ye);
 		traceColor = depthOfField(_r);
 		//traceColor = trace(_geometry, _r, 0, false);
 		vecAux[3] = traceColor;
@@ -478,27 +542,109 @@ glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* c, int iter, int ep
 		vecAux3[2] = traceColor;
 
 		glm::vec3 cor1 = glm::vec3(0.0);
-		cor1 = monteCarloSampling(x, y, vecAux, iter + 1, e);
+		cor1 = monteCarloSamplingDOF(x, y, vecAux, iter + 1, e);
 
 		glm::vec3 cor2 = glm::vec3(0.0);
-		cor2 = monteCarloSampling(x + e, y, vecAux1, iter + 1, e);
+		cor2 = monteCarloSamplingDOF(x + e, y, vecAux1, iter + 1, e);
 
 		glm::vec3 cor3 = glm::vec3(0.0);
-		cor3 = monteCarloSampling(x + e, y + e, vecAux2, iter + 1, e);
+		cor3 = monteCarloSamplingDOF(x + e, y + e, vecAux2, iter + 1, e);
 
 		glm::vec3 cor4 = glm::vec3(0.0);
-		cor3 = monteCarloSampling(x, y + e, vecAux3, iter + 1, e);
+		cor3 = monteCarloSamplingDOF(x, y + e, vecAux3, iter + 1, e);
 
 		res.r = (cor1.r + cor2.r + cor3.r + cor4.r) / 4;
 		res.g = (cor1.g + cor2.g + cor3.g + cor4.g) / 4;
 		res.b = (cor1.b + cor2.b + cor3.b + cor4.b) / 4;
-	
+
 	}
 	delete _r;
 	return res;
 	//std::cout << "monteCarloSampling" << std::endl;
 	//std::cin.ignore(1);
 };
+
+
+void Scene::genAreaLightPlanes()
+{
+	for (unsigned int i = 0; i < _lights.size(); i++)
+	{
+		_lights[i].corner = _lights[i].XYZ - glm::vec3(A_L_X_SIZE, A_L_Y_SIZE, 0.0f);
+		_lights[i].xdir = glm::vec3(1.0f, 0.0f, 0.0f);
+		_lights[i].ydir = glm::vec3(0.0f, 1.0f, 0.0f);
+	}
+
+	//std::cout << "genAreaLightPlanes" << std::endl;
+	//std::cin.ignore(1);
+}
+
+void Scene::computeObjsBB()
+{
+	for each (Geometry* g in _geometry)
+	{
+		g->computeBoundingBox();
+	}
+	//std::cout << "computeObjsBB" << std::endl;
+	//std::cin.ignore(1);
+}
+
+void Scene::loadScene(int key, int numDepth, int numSF)
+{
+	//std::cout << std::thread::hardware_concurrency() << std::endl;
+	//std::cout << "rendering ..." << std::endl;
+	_numDepth = numDepth;
+	_numSF = numSF;
+
+	computeObjsBB();
+	if (_geometry.size() > 0)
+	{
+		NotObjects* grid = new Grid(2);
+		((Grid*)grid)->computeBbox(_geometry);
+		((Grid*)grid)->cellsSetup();
+		((Grid*)grid)->cellObjectAttribution(_geometry);
+		_planesnGrid.insert(_planesnGrid.begin(), grid);
+	}
+
+	int n = _width*_height;
+	_pixels = new pixel[n];
+	_RES.x = (float)_width;
+	_RES.y = (float)_height;
+	
+	//std::thread first([=](){partialSceneCalculation(0, 0, _RES.x, _RES.y); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
+
+	std::thread first([=](){partialSceneCalculation(_RES.x - _RES.x / 2 - 1, _RES.y - _RES.y / 2 - 1, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 1, key); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
+
+	std::thread second([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2 - 1, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 2, key); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	std::thread third([=](){partialSceneCalculation(_RES.x - _RES.x / 2 - 1, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 3, key); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	std::thread forth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2), 4, key); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	/** /
+	std::thread fifth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread first(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum, _RES.x / (NUM_THREADS / 2), _RES.y / (NUM_THREADS / 2)));
+
+	std::thread sixth([=](){partialSceneCalculation(_RES.x - _RES.x*3/4, 0, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread second(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	std::thread seventh([=](){partialSceneCalculation(_RES.x - _RES.x * 3 / 4, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread third(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+
+	std::thread eighth([=](){partialSceneCalculation(_RES.x - _RES.x / 2, _RES.y - _RES.y / 2, _RES.x / (NUM_THREADS), _RES.y / (NUM_THREADS / 2)); return 1; });//std::thread forth(&Scene::partialSceneCalculation, (_RES.x - _RES.x / threadNum, _RES.y - _RES.y / threadNum++, _RES.x / NUM_THREADS, _RES.y / NUM_THREADS));
+	/**/
+
+	first.join();
+	second.join();
+	third.join();
+	forth.join();
+	/** /
+	fifth.join();
+	sixth.join();
+	seventh.join();
+	eighth.join();
+	/**/
+	//std::cout << "ended rendering ..." << std::endl;
+
+	//std::cout << "loadScene" << std::endl;
+	//std::cin.ignore(1);
+}
 
 glm::vec3 calculateRayObjectIntersection(std::vector<NotObjects*> planesnGrid, Ray*& ray, Geometry*& nearest)
 {
@@ -547,7 +693,7 @@ void checkColisionOfShadowRays(std::vector<NotObjects*> planesnGrid, std::vector
 
 void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal, 
 							std::vector<lightRays> &lightsOfSF, std::vector<light> lights,
-							bool refracted, glm::vec3 closestintersect, std::vector<NotObjects*> planesnGrid, Twister *t)
+							bool refracted, glm::vec3 closestintersect, std::vector<NotObjects*> planesnGrid, Twister *t, int numSF)
 {
 	int j = 0;
 	for (light l : lights)
@@ -564,7 +710,7 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 		rays_pos->push_back(rayPos(r, l.XYZ));*/
 
 		const float ERR = 0.001f;
-		for (int i = 0; i < NUM_SHADOW_RAYS; i++)
+		for (int i = 0; i < numSF; i++)
 		{
 			Ray * r2 = new Ray();
 			if (refracted)
@@ -574,22 +720,22 @@ void calculateShadowFillers(std::vector<Ray*>& shadowfillers, glm::vec3 normal,
 			glm::vec3 randomizedPoint;
 			float du = t->Rand() * A_L_X_SIZE;
 			float dv = t->Rand() * A_L_Y_SIZE;
-			if (i < NUM_SHADOW_RAYS / 4.0f)
+			if (i < numSF / 4.0f)
 			{
 				
 				randomizedPoint = l.corner + du*l.xdir + dv*l.ydir;
 			}
-			else if (i < 2.0 *(NUM_SHADOW_RAYS / 4.0f))
+			else if (i < 2.0 *(numSF / 4.0f))
 			{
 				
 				randomizedPoint = l.XYZ + du*l.xdir + dv*l.ydir;
 			}
-			else if (i < 3.0 *(NUM_SHADOW_RAYS / 4.0f))
+			else if (i < 3.0 *(numSF / 4.0f))
 			{
 				
 				randomizedPoint = l.corner + l.xdir*A_L_X_SIZE + du*l.xdir + dv*l.ydir;
 			}
-			else if (i < NUM_SHADOW_RAYS)
+			else if (i < numSF)
 			{
 				
 				randomizedPoint = l.corner + l.ydir*A_L_Y_SIZE + du*l.xdir + dv*l.ydir;
@@ -757,7 +903,7 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 	glm::vec3 lightComp = glm::vec3(0.0);
 
 	//for each light in the scene create a shadowfiller if the light might have a contribuition (l.XYZ - intersect . normal) > 0
-	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _planesnGrid, _t);
+	calculateShadowFillers(_shadowfillers, normal, _lightsofSF, _lights, refracted, closestintersect, _planesnGrid, _t, _numSF);
 
 	calculateLocalColor(lightComp, _shadowfillers, normal, _lightsofSF, _lights, closestintersect, ray, nearest);
 
@@ -830,4 +976,20 @@ glm::vec3 Scene::trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth
 	//std::cin.ignore(1);
 	
 	return lightComp;
+}
+
+Scene::~Scene()
+{
+	std::vector<light>().swap(_lights);
+	delete _c;
+	for (std::vector<Geometry*>::iterator it = _geometry.begin(); it != _geometry.end(); it++)
+	{
+		delete(*it);
+	}
+	std::vector<Geometry*>().swap(_geometry);
+	for (std::vector<NotObjects*>::iterator it = _planesnGrid.begin(); it != _planesnGrid.end(); it++)
+	{
+		delete(*it);
+	}
+	delete _t;
 }

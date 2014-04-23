@@ -48,19 +48,23 @@ class Scene
 	pixel *_pixels;
 	int _maxDepth, _maxDiv;
 
+	std::thread threads[4];
+
+	int _numDepth, _numSF;
+
 public:
 	Scene();
 
 	void loadNFF(std::string filename);
-	void loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS);
+	void loadObj(std::string fpath, bool triangulated, glm::vec3 RGB, float KS, float transmittance);
 
-	void partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter);
-	void loadScene();
+	void partialSceneCalculation(int initX, int initY, float endX, float endY, int quarter, int key);
+	void loadScene(int key, int numDepth, int numSF);
 	void computeObjsBB();
 
 	glm::vec3 trace(std::vector<NotObjects*> planesnGrid, Ray* ray, int depth, bool refracted);
 
-	glm::vec3 Scene::monteCarloSampling(int x, int y, glm::vec3* colors, int iter, int epsilon);
+	glm::vec3 Scene::monteCarloSamplingDOF(int x, int y, glm::vec3* colors, int iter, int epsilon);
 	glm::vec3 depthOfField(Ray * ray);
 
 	void savebmp(const char *filename, int w, int h, int dpi, pixel *data);
@@ -72,4 +76,12 @@ public:
 	int getHeight() { return _height; }
 	int getDpi(){ return _dpi; }
 
+	void aliasingDOF(Ray* ray, int x, int y, int e);
+	void monteCarloDOF(Ray* ray, int x, int y, int e);
+	void aliasing(Ray* ray, int x, int y, int e);
+	void monteCarlo(Ray* ray, int x, int y, int e);
+	void traceOnly(Ray* ray, int x, int y, int e);
+	void DOFOnly(Ray* ray, int x, int y, int e);
+
+	~Scene();
 };

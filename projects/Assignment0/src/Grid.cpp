@@ -387,4 +387,9 @@ std::vector<Geometry*> Grid::gridTraversal(int ix, int iy, int iz, Ray* r)
 Grid::~Grid()
 {
 	delete _bbox;
+	for (std::vector<Cell*>::iterator it = _cells.begin(); it != _cells.end(); it++)
+	{
+		delete(*it);
+	}
+	std::vector<Cell*>().swap(_cells);
 }

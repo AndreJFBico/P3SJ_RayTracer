@@ -49,7 +49,7 @@ void PieceReader::readObject(std::string fpath, bool triangulated)
 			v.RGBA = glm::vec4(1.0f);
 			
 			s.ignore(256, '/');
-			if (s.peek() != '/')
+			if (s.peek() != '/' && text->size() > 0)
 			{
 				s >> a;
 				a--;
@@ -70,7 +70,7 @@ void PieceReader::readObject(std::string fpath, bool triangulated)
 			v.RGBA = glm::vec4(1.0f);
 
 			s.ignore(256, '/');
-			if (s.peek() != '/')
+			if (s.peek() != '/' && text->size() > 0)
 			{
 				s >> b;
 				b--;
@@ -91,7 +91,7 @@ void PieceReader::readObject(std::string fpath, bool triangulated)
 			v.RGBA = glm::vec4(1.0f);
 
 			s.ignore(256, '/');
-			if (s.peek() != '/')
+			if (s.peek() != '/' && text->size() > 0)
 			{
 				s >> c;
 				c--;
@@ -114,7 +114,7 @@ void PieceReader::readObject(std::string fpath, bool triangulated)
 				v.RGBA = glm::vec4(1.0f);
 
 				s.ignore(256, '/');
-				if (s.peek() != '/')
+				if (s.peek() != '/' && text->size() > 0)
 				{
 					s >> d;
 					d--;
@@ -133,7 +133,6 @@ void PieceReader::readObject(std::string fpath, bool triangulated)
 			s.ignore(256, ' ');
 			v.TANG = glm::vec4(0.0, 0.0, 0.0, 0.0);
 		}
-		else if (line[0] == '#') { /* ignoring this line */ }
 		else { /* ignoring this line */ }
 	}
 }
